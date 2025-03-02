@@ -5,8 +5,8 @@ public class CameraControl : MonoBehaviour
     [SerializeField] private float      _resetRotationSpeed;
     [SerializeField] private float      _maxLookUpAngle;
     [SerializeField] private float      _maxLookDownAngle;
-    [SerializeField] private float      _zoomMinDistance;
-    [SerializeField] private float      _zoomMaxDistance;
+    [SerializeField] private float      _closeZoom;
+    [SerializeField] private float      _farZoom;
     [SerializeField] private float      _zoomDeceleration;
     [SerializeField] private Transform  _deocclusionPivot;
     [SerializeField] private LayerMask  _deocclusionLayerMask;
@@ -44,13 +44,25 @@ public class CameraControl : MonoBehaviour
     {
         if (Input.GetButton("Camera"))
         {
-            _rotation = transform.localEulerAngles;
-            _rotation.y += Input.GetAxis("Mouse X");
+            _position = _cameraTransform.localPosition;
 
-            transform.localEulerAngles = _rotation;
+            _position.z = _closeZoom;
+
+
+            _cameraTransform.localPosition = _position;
+            _zoomPosition = _position.z;
         }
         else
-            ResetRotation();
+        {
+            _position = _cameraTransform.localPosition;
+
+            _position.z = _farZoom;
+
+
+            _cameraTransform.localPosition = _position;
+            _zoomPosition = _position.z;
+        }
+            
     }
 
     private void ResetRotation()
@@ -110,9 +122,9 @@ public class CameraControl : MonoBehaviour
             _position = _cameraTransform.localPosition;
             _position.z += _zoomVelocity * Time.deltaTime;
 
-            if (_position.z > -_zoomMinDistance || _position.z < -_zoomMaxDistance)
+            if (_position.z > -_closeZoom || _position.z < -_farZoom)
             {
-                _position.z = Mathf.Clamp(_position.z, -_zoomMaxDistance, -_zoomMinDistance);
+                _position.z = Mathf.Clamp(_position.z, -_farZoom, -_closeZoom);
                 _zoomVelocity = 0f;
             }
 
