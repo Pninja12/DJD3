@@ -348,6 +348,22 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 1.15
       objectReference: {fileID: 0}
+    - target: {fileID: 7451147202518025478, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7451147202518025478, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8021314688126094770, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
+      propertyPath: _farZoom
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8021314688126094770, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
+      propertyPath: _closeZoom
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 8021314688126094770, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
       propertyPath: _deocclusionLayerMask.m_Bits
       value: 4294967295
