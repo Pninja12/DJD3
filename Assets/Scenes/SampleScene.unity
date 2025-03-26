@@ -453,9 +453,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1331526982}
     - target: {fileID: 1271935452358342595, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
+      propertyPath: _crouchHeight
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1271935452358342595, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
       propertyPath: _scriptCamera
       value: 
       objectReference: {fileID: 1639975735}
+    - target: {fileID: 1271935452358342595, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
+      propertyPath: _defaultHeight
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1271935452358342595, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
       propertyPath: _rotationalSpeed
       value: 10
@@ -479,6 +487,10 @@ PrefabInstance:
     - target: {fileID: 7451147202518025478, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
       propertyPath: m_LocalPosition.z
       value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7939044490635732942, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
+      propertyPath: m_Height
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8021314688126094770, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}
       propertyPath: _aim
@@ -517,7 +529,7 @@ GameObject:
   - component: {fileID: 1518894690}
   - component: {fileID: 1518894689}
   - component: {fileID: 1518894688}
-  - component: {fileID: 1518894687}
+  - component: {fileID: 1518894691}
   m_Layer: 0
   m_Name: Plane
   m_TagString: WorldBoundary
@@ -525,28 +537,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!64 &1518894687
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1518894686}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &1518894688
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -615,6 +605,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1518894691
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1518894686}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 2.220446e-16, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1639975735 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8021314688126094770, guid: 65f7981b05d5eb24ba689ef10a15a1d9, type: 3}

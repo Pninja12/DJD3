@@ -1,5 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform _camera;
     [SerializeField] private CameraControl _scriptCamera;
     [SerializeField] private float _rotationalSpeed = 2;
+    [SerializeField] private float _crouchHeight;
+    [SerializeField] private float _defaultHeight;
+    [SerializeField] private KeyCode crouchKey = KeyCode.LeftControl;
 
     private CharacterController _controller;
     private Vector3 _velocityHor;
@@ -22,6 +26,8 @@ public class PlayerMovement : MonoBehaviour
     private bool    _arrivedAtCamera;
     private float _rotateTo = 0;
     private float   _rotateWhereWeAre;
+    private bool _isCrouching = false;
+    
 
     void Start()
     {
@@ -46,11 +52,22 @@ public class PlayerMovement : MonoBehaviour
 
         CheckForJump();
         UpdateRotation();
+
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            // Start crouching
+            StartCrouch();
+        }
+        else if (Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            // Stop crouching
+            StopCrouch();
+        }
     }
 
     private void UpdateRotation()
     {
-        //Se clicar no botão direito do rato:
+        //Se clicar no botao direito do rato:
         if (Input.GetButton("Camera"))
         {
             float rotation = Input.GetAxis("Mouse X");
@@ -62,14 +79,14 @@ public class PlayerMovement : MonoBehaviour
                 _arrivedAtCamera = false;
             }
 
-            //Se a camera for diferente de onde o jogador está a olhar
+            //Se a camera for diferente de onde o jogador estï¿½ a olhar
             if (transform.eulerAngles.y != _rotateTo && !_arrivedAtCamera)
             {
 
-                //Vista 2D, rodamos a camera para 0, também rodando o jogador
+                //Vista 2D, rodamos a camera para 0, tambï¿½m rodando o jogador
                 _rotateWhereWeAre = transform.eulerAngles.y - _rotateTo;
 
-                //Estabilizar o número caso se torne negativo
+                //Estabilizar o nï¿½mero caso se torne negativo
                 if (_rotateWhereWeAre < 0)
                     _rotateWhereWeAre = 360 + _rotateWhereWeAre;
 
@@ -129,14 +146,14 @@ public class PlayerMovement : MonoBehaviour
             _arrivedAtCamera = false;
 
 
-            //Se a camera for diferente de onde o jogador está a olhar
+            //Se a camera for diferente de onde o jogador estï¿½ a olhar
             if (transform.eulerAngles.y != _rotateTo && !_arrivedAtCamera)
             {
 
-                //Vista 2D, rodamos a camera para 0, também rodando o jogador
+                //Vista 2D, rodamos a camera para 0, tambï¿½m rodando o jogador
                 _rotateWhereWeAre = transform.eulerAngles.y - _rotateTo;
 
-                //Estabilizar o número caso se torne negativo
+                //Estabilizar o nï¿½mero caso se torne negativo
                 if (_rotateWhereWeAre < 0)
                     _rotateWhereWeAre = 360 + _rotateWhereWeAre;
 
@@ -214,6 +231,25 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && _controller.isGrounded)
             _jump = true;
     }
+
+    private void StartCrouch()
+    {
+        if(!_isCrouching)
+        {
+            _controller.height = _crouchHeight;
+            _isCrouching = true;
+        }
+    }
+
+    private void StopCrouch()
+    {
+        if(_isCrouching)
+        {
+            _controller.height = _defaultHeight;
+            _isCrouching = false;
+        }
+    }
+    
 
     void FixedUpdate()
     {
