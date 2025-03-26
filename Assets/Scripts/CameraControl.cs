@@ -7,6 +7,7 @@ public class CameraControl : MonoBehaviour
     [SerializeField] private float      _maxLookDownAngle;
     [SerializeField] private float      _closeZoom;
     [SerializeField] private float      _farZoom;
+    [SerializeField] private float      _aim;
     [SerializeField] private float      _zoomDeceleration;
     [SerializeField] private Transform  _deocclusionPivot;
     [SerializeField] private LayerMask  _deocclusionLayerMask;
@@ -21,7 +22,7 @@ public class CameraControl : MonoBehaviour
     private float       _zoomPosition;
     private Vector3     _deocclusionVector;
     private Vector3     _deocclusionPoint;
-
+    private float       _currentZoom;
     void Start()
     {
         _cameraTransform    = GetComponentInChildren<Camera>().transform;
@@ -29,6 +30,25 @@ public class CameraControl : MonoBehaviour
         _zoomVelocity       = 0f;
         _zoomPosition       = _cameraTransform.localPosition.z;
         _deocclusionVector  = new Vector3(0f, 0f, _deocclusionThreshold);
+    }
+
+    public void Rotate(float angle)
+    {
+        if (!(angle < 0.0001) || !(angle > -0.0001))
+        {
+            // Get the current x rotation
+            float currentXRotation = transform.rotation.eulerAngles.x;
+
+            // Set the x rotation to 0
+            transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+            transform.Rotate(0f, angle, 0f);
+            transform.rotation = Quaternion.Euler(currentXRotation, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+        }
+    }
+
+    public void DefiniteRotate(float angle)
+    {
+        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, angle, transform.rotation.eulerAngles.z);
     }
 
     void Update()
@@ -46,7 +66,7 @@ public class CameraControl : MonoBehaviour
         {
             _position = _cameraTransform.localPosition;
 
-            _position.z = _closeZoom;
+            _position.z = _aim;
 
 
             _cameraTransform.localPosition = _position;
@@ -56,11 +76,16 @@ public class CameraControl : MonoBehaviour
         {
             _position = _cameraTransform.localPosition;
 
-            _position.z = _farZoom;
+            _position.z = _closeZoom;
 
 
             _cameraTransform.localPosition = _position;
             _zoomPosition = _position.z;
+
+            _rotation = transform.localEulerAngles;
+            _rotation.y += Input.GetAxis("Mouse X");
+
+            transform.localEulerAngles = _rotation;
         }
             
     }

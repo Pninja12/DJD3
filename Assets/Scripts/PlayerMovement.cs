@@ -9,12 +9,19 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _maxBackwardSpeed;    
     [SerializeField] private float _maxStrafeSpeed;
     [SerializeField] private float _jumpSpeed;
+    [SerializeField] private Transform _camera;
+    [SerializeField] private CameraControl _scriptCamera;
+    [SerializeField] private float _rotationalSpeed = 2;
 
     private CharacterController _controller;
     private Vector3 _velocityHor;
     private Vector3 _velocityVer;
     private Vector3 _motion;
     private bool    _jump;
+    private bool    _cameraLock;
+    private bool    _arrivedAtCamera;
+    private float _rotateTo = 0;
+    private float   _rotateWhereWeAre;
 
     void Start()
     {
@@ -23,6 +30,8 @@ public class PlayerMovement : MonoBehaviour
         _velocityVer    = Vector3.zero;
         _motion         = Vector3.zero;
         _jump           = false;
+        _cameraLock     = false;
+        _arrivedAtCamera = false;
 
         HideCursor();
     }
@@ -34,15 +43,170 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        UpdateRotation();
+
         CheckForJump();
+        UpdateRotation();
     }
 
     private void UpdateRotation()
     {
-        float rotation = Input.GetAxis("Mouse X");
+        //Se clicar no botão direito do rato:
+        if (Input.GetButton("Camera"))
+        {
+            float rotation = Input.GetAxis("Mouse X");
+            transform.Rotate(0f, rotation, 0f);
+            //Lock para contar apenas a primeira vez
+            if (!_cameraLock)
+            {
+                _rotateTo = _camera.eulerAngles.y;
+                _arrivedAtCamera = false;
+            }
 
-        transform.Rotate(0f, rotation, 0f);
+            //Se a camera for diferente de onde o jogador está a olhar
+            if (transform.eulerAngles.y != _rotateTo && !_arrivedAtCamera)
+            {
+
+                //Vista 2D, rodamos a camera para 0, também rodando o jogador
+                _rotateWhereWeAre = transform.eulerAngles.y - _rotateTo;
+
+                //Estabilizar o número caso se torne negativo
+                if (_rotateWhereWeAre < 0)
+                    _rotateWhereWeAre = 360 + _rotateWhereWeAre;
+
+                if (_rotateWhereWeAre < 180)
+                {
+                    //Caso a velocidade ultrapasse o destino
+                    if (transform.eulerAngles.y - _rotationalSpeed < _rotateTo)
+                    {
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
+                        _scriptCamera.DefiniteRotate(_rotateTo);
+                        /* transform.Rotate(0f, -(transform.eulerAngles.y - _rotateTo), 0f);
+                        _scriptCamera.Rotate(transform.eulerAngles.y - _rotateTo); */
+                    }
+                    else
+                    {
+                        transform.Rotate(0f, -_rotationalSpeed, 0f);
+                        _scriptCamera.Rotate(_rotationalSpeed);
+                    }
+                }
+                else
+                {
+                    //Caso a velocidade ultrapasse o destino
+                    if (transform.eulerAngles.y + _rotationalSpeed > _rotateTo)
+                    {
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
+                        _scriptCamera.DefiniteRotate(_rotateTo);
+                        /* transform.Rotate(0f, transform.eulerAngles.y - _rotateTo, 0f);
+                        _scriptCamera.Rotate(-(transform.eulerAngles.y - _rotateTo)); */
+                    }
+
+                    else
+                    {
+                        transform.Rotate(0f, _rotationalSpeed, 0f);
+                        _scriptCamera.Rotate(-_rotationalSpeed);
+                    }
+
+                }
+
+                if (transform.eulerAngles.y == _rotateTo)
+                {
+                    _arrivedAtCamera = true;
+                }
+            }
+
+            _cameraLock = true;
+        }
+        else
+        {
+            _cameraLock = false;
+        }
+        if (!Input.GetButton("Camera") && (Input.GetButton("Strafe") || Input.GetButton("Forward")))
+        {
+            float rotation = Input.GetAxis("Mouse X");
+            transform.Rotate(0f, rotation, 0f);
+            //Lock para contar apenas a primeira vez
+            _rotateTo = _camera.eulerAngles.y;
+            _arrivedAtCamera = false;
+
+
+            //Se a camera for diferente de onde o jogador está a olhar
+            if (transform.eulerAngles.y != _rotateTo && !_arrivedAtCamera)
+            {
+
+                //Vista 2D, rodamos a camera para 0, também rodando o jogador
+                _rotateWhereWeAre = transform.eulerAngles.y - _rotateTo;
+
+                //Estabilizar o número caso se torne negativo
+                if (_rotateWhereWeAre < 0)
+                    _rotateWhereWeAre = 360 + _rotateWhereWeAre;
+
+                
+                if (_rotateWhereWeAre < 180)
+                {
+                    //Caso a velocidade ultrapasse o destino
+                    if (transform.eulerAngles.y - _rotationalSpeed < _rotateTo && transform.eulerAngles.y != _rotateTo)
+                    {
+                        float conta = _rotateTo - transform.eulerAngles.y;
+                        /* transform.Rotate(0f, -(transform.eulerAngles.y - _rotateTo), 0f);
+                        _scriptCamera.Rotate(conta);
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z); */
+                        if (conta > _rotationalSpeed / 2)
+                        {
+                            transform.Rotate(0f, -(_rotationalSpeed / 2), 0f);
+                            _scriptCamera.Rotate(_rotationalSpeed / 2);
+                        }
+                        else
+                        {
+                            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
+                            _scriptCamera.DefiniteRotate(_rotateTo);
+                        }
+                        
+                    }
+                    else
+                    {
+                        transform.Rotate(0f, -_rotationalSpeed, 0f);
+                        _scriptCamera.Rotate(_rotationalSpeed);
+                    }
+                }
+                else if (_rotateWhereWeAre > 180)
+                {
+                    //Caso a velocidade ultrapasse o destino
+                    if (transform.eulerAngles.y + _rotationalSpeed > _rotateTo && transform.eulerAngles.y != _rotateTo)
+                    {
+                        float conta = -(_rotateTo - transform.eulerAngles.y);
+                        /* transform.Rotate(0f, transform.eulerAngles.y - _rotateTo, 0f);
+                        _scriptCamera.Rotate(conta);
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z); */
+
+                        if (conta > _rotationalSpeed / 2)
+                        {
+                            transform.Rotate(0f, _rotationalSpeed/2, 0f);
+                        _scriptCamera.Rotate(-(_rotationalSpeed/2));
+                        }
+                        else
+                        {
+                            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
+                            _scriptCamera.DefiniteRotate(_rotateTo);
+                        }
+                        
+                    }
+
+                    else
+                    {
+                        transform.Rotate(0f, _rotationalSpeed, 0f);
+                        _scriptCamera.Rotate(-_rotationalSpeed);
+                    }
+
+                }
+
+                if (transform.eulerAngles.y == _rotateTo)
+                {
+                    _arrivedAtCamera = true;
+                }
+            }
+        }
+            
+            
     }
 
     private void CheckForJump()
@@ -53,6 +217,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        
         UpdateVelocityHor();
         UpdateVelocityVer();
         UpdatePosition();
