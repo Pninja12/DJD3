@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CameraControl : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class CameraControl : MonoBehaviour
     private Vector3     _deocclusionVector;
     private Vector3     _deocclusionPoint;
     private float       _currentZoom;
+    private Vector3       _previousCameraPlace;
     void Start()
     {
         _cameraTransform    = GetComponentInChildren<Camera>().transform;
@@ -58,12 +60,15 @@ public class CameraControl : MonoBehaviour
         UpdateZoom();
 
         PreventOcclusion();
+        if (!Input.GetButton("Camera"))
+            _previousCameraPlace = _position;
     }
 
     private void UpdateRotation()
     {
         if (Input.GetButton("Camera"))
         {
+            _previousCameraPlace = _position;
             _position = _cameraTransform.localPosition;
 
             _position.z = _aim;
@@ -74,9 +79,11 @@ public class CameraControl : MonoBehaviour
         }
         else
         {
+            if (_previousCameraPlace != _position)
+                _position = _previousCameraPlace;
             _position = _cameraTransform.localPosition;
 
-            _position.z = _closeZoom;
+            //_position.z = _closeZoom;
 
 
             _cameraTransform.localPosition = _position;
@@ -131,12 +138,12 @@ public class CameraControl : MonoBehaviour
         else if (_zoomVelocity > 0f)
         {
             _zoomVelocity -= _zoomDeceleration * Time.deltaTime;
-            _zoomVelocity = Mathf.Max(0f, _zoomVelocity);
+            _zoomVelocity = Mathf.Max(0f, _zoomVelocity/2); //Trocar número para ser mais lento
         }
         else
         {
             _zoomVelocity += _zoomDeceleration * Time.deltaTime;
-            _zoomVelocity = Mathf.Min(0f, _zoomVelocity);
+            _zoomVelocity = Mathf.Min(0f, _zoomVelocity/2); //trocar número para ser mais lento
         }
     }
 

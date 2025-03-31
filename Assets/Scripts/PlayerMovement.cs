@@ -82,6 +82,7 @@ public class PlayerMovement : MonoBehaviour
             //Se a camera for diferente de onde o jogador est� a olhar
             if (transform.eulerAngles.y != _rotateTo && !_arrivedAtCamera)
             {
+                print($"Where we actually are : {transform.eulerAngles.y}");
 
                 //Vista 2D, rodamos a camera para 0, tamb�m rodando o jogador
                 _rotateWhereWeAre = transform.eulerAngles.y - _rotateTo;
@@ -90,15 +91,33 @@ public class PlayerMovement : MonoBehaviour
                 if (_rotateWhereWeAre < 0)
                     _rotateWhereWeAre = 360 + _rotateWhereWeAre;
 
+                print($"Rotate to : {_rotateTo}");
+                print($"Where we are : {_rotateWhereWeAre}");
+
                 if (_rotateWhereWeAre < 180)
                 {
                     //Caso a velocidade ultrapasse o destino
-                    if (transform.eulerAngles.y - _rotationalSpeed < _rotateTo)
+                    if (transform.eulerAngles.y - _rotationalSpeed < _rotateTo && transform.eulerAngles.y != _rotateTo)
                     {
-                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
-                        _scriptCamera.DefiniteRotate(_rotateTo);
+                        /* transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
+                        _scriptCamera.DefiniteRotate(_rotateTo); */
                         /* transform.Rotate(0f, -(transform.eulerAngles.y - _rotateTo), 0f);
                         _scriptCamera.Rotate(transform.eulerAngles.y - _rotateTo); */
+
+                        float conta = _rotateTo - transform.eulerAngles.y;
+                        /* transform.Rotate(0f, -(transform.eulerAngles.y - _rotateTo), 0f);
+                        _scriptCamera.Rotate(conta);
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z); */
+                        if (conta > _rotationalSpeed / 2)
+                        {
+                            transform.Rotate(0f, -(_rotationalSpeed / 2), 0f);
+                            _scriptCamera.Rotate(_rotationalSpeed / 2);
+                        }
+                        else
+                        {
+                            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
+                            _scriptCamera.DefiniteRotate(_rotateTo);
+                        }
                     }
                     else
                     {
@@ -109,12 +128,28 @@ public class PlayerMovement : MonoBehaviour
                 else
                 {
                     //Caso a velocidade ultrapasse o destino
-                    if (transform.eulerAngles.y + _rotationalSpeed > _rotateTo)
+                    if (transform.eulerAngles.y + _rotationalSpeed > _rotateTo && transform.eulerAngles.y != _rotateTo)
                     {
-                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
-                        _scriptCamera.DefiniteRotate(_rotateTo);
+                        /* transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
+                        _scriptCamera.DefiniteRotate(_rotateTo); */
                         /* transform.Rotate(0f, transform.eulerAngles.y - _rotateTo, 0f);
                         _scriptCamera.Rotate(-(transform.eulerAngles.y - _rotateTo)); */
+
+                        float conta = -(_rotateTo - transform.eulerAngles.y);
+                        /* transform.Rotate(0f, transform.eulerAngles.y - _rotateTo, 0f);
+                        _scriptCamera.Rotate(conta);
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z); */
+
+                        if (conta > _rotationalSpeed / 2)
+                        {
+                            transform.Rotate(0f, _rotationalSpeed/2, 0f);
+                            _scriptCamera.Rotate(-(_rotationalSpeed/2));
+                        }
+                        else
+                        {
+                            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
+                            _scriptCamera.DefiniteRotate(_rotateTo);
+                        }
                     }
 
                     else
@@ -132,6 +167,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             _cameraLock = true;
+            print($"Speed rotation : {_rotationalSpeed}\n-------------");
         }
         else
         {
@@ -198,7 +234,7 @@ public class PlayerMovement : MonoBehaviour
                         if (conta > _rotationalSpeed / 2)
                         {
                             transform.Rotate(0f, _rotationalSpeed/2, 0f);
-                        _scriptCamera.Rotate(-(_rotationalSpeed/2));
+                            _scriptCamera.Rotate(-(_rotationalSpeed/2));
                         }
                         else
                         {
