@@ -82,7 +82,6 @@ public class PlayerMovement : MonoBehaviour
             //Se a camera for diferente de onde o jogador est� a olhar
             if (transform.eulerAngles.y != _rotateTo && !_arrivedAtCamera)
             {
-                print($"Where we actually are : {transform.eulerAngles.y}");
 
                 //Vista 2D, rodamos a camera para 0, tamb�m rodando o jogador
                 _rotateWhereWeAre = transform.eulerAngles.y - _rotateTo;
@@ -90,9 +89,6 @@ public class PlayerMovement : MonoBehaviour
                 //Estabilizar o n�mero caso se torne negativo
                 if (_rotateWhereWeAre < 0)
                     _rotateWhereWeAre = 360 + _rotateWhereWeAre;
-
-                print($"Rotate to : {_rotateTo}");
-                print($"Where we are : {_rotateWhereWeAre}");
 
                 if (_rotateWhereWeAre < 180)
                 {
@@ -167,7 +163,6 @@ public class PlayerMovement : MonoBehaviour
             }
 
             _cameraLock = true;
-            print($"Speed rotation : {_rotationalSpeed}\n-------------");
         }
         else
         {

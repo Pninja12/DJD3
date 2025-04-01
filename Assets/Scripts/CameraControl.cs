@@ -24,7 +24,6 @@ public class CameraControl : MonoBehaviour
     private Vector3     _deocclusionVector;
     private Vector3     _deocclusionPoint;
     private float       _currentZoom;
-    private Vector3       _previousCameraPlace;
     void Start()
     {
         _cameraTransform    = GetComponentInChildren<Camera>().transform;
@@ -60,34 +59,30 @@ public class CameraControl : MonoBehaviour
         UpdateZoom();
 
         PreventOcclusion();
-        if (!Input.GetButton("Camera"))
-            _previousCameraPlace = _position;
     }
 
     private void UpdateRotation()
     {
         if (Input.GetButton("Camera"))
         {
-            _previousCameraPlace = _position;
             _position = _cameraTransform.localPosition;
 
             _position.z = _aim;
 
 
             _cameraTransform.localPosition = _position;
-            _zoomPosition = _position.z;
+            //_zoomPosition = _position.z;
         }
         else
         {
-            if (_previousCameraPlace != _position)
-                _position = _previousCameraPlace;
+            //_zoomPosition = _position.z;
             _position = _cameraTransform.localPosition;
 
             //_position.z = _closeZoom;
 
 
             _cameraTransform.localPosition = _position;
-            _zoomPosition = _position.z;
+            //_zoomPosition = _position.z;
 
             _rotation = transform.localEulerAngles;
             _rotation.y += Input.GetAxis("Mouse X");
@@ -189,7 +184,7 @@ public class CameraControl : MonoBehaviour
     {
         _position = _cameraTransform.localPosition;
 
-        if (_position.z > _zoomPosition)
+        if (_position.z > _zoomPosition && !Input.GetButton("Camera"))
         {
             _position.z = Mathf.Max(_position.z - _deocclusionSpeed * Time.deltaTime, _zoomPosition);
             _deocclusionPoint = transform.TransformPoint(_position) - _cameraTransform.TransformDirection(_deocclusionVector);
