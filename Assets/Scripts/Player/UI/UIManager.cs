@@ -10,6 +10,8 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         _openPauseMenu = false;
+        _crossHair.SetActive(false);
+        _pauseMenu.SetActive(false);
     }
 
     // Update is called once per frame
@@ -23,14 +25,9 @@ public class UIManager : MonoBehaviour
             _crossHair.SetActive(false);
 
 
-        if (Input.GetButton("Cancel"))
+        if (Input.GetButtonDown("Cancel"))
         {
-            _pauseMenu.SetActive(true);
-        }
-
-        if (_pauseMenu.GetComponent<PauseMenu>().ExitClicked())
-        {
-            _pauseMenu.SetActive(false);
+            _pauseMenu.SetActive(!_pauseMenu.activeSelf);
         }
         
     }
