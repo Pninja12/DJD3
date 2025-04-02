@@ -121,7 +121,7 @@ public class CameraControl : MonoBehaviour
     private void UpdateZoom()
     {
         UpdateZoomVelocity();
-        if(Input.GetButton("Camera"))
+        if(!Input.GetButton("Camera"))
             UpdateZoomPosition();
     }
 
