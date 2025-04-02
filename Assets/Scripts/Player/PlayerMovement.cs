@@ -75,9 +75,10 @@ public class PlayerMovement : MonoBehaviour
             //Lock para contar apenas a primeira vez
             if (!_cameraLock)
             {
-                _rotateTo = _camera.eulerAngles.y;
+                
                 _arrivedAtCamera = false;
             }
+            _rotateTo = _camera.eulerAngles.y;
 
             //Se a camera for diferente de onde o jogador est� a olhar
             if (transform.eulerAngles.y != _rotateTo && !_arrivedAtCamera)
@@ -138,8 +139,8 @@ public class PlayerMovement : MonoBehaviour
 
                         if (conta > _rotationalSpeed / 2)
                         {
-                            transform.Rotate(0f, _rotationalSpeed/2, 0f);
-                            _scriptCamera.Rotate(-(_rotationalSpeed/2));
+                            transform.Rotate(0f, _rotationalSpeed / 2, 0f);
+                            _scriptCamera.Rotate(-(_rotationalSpeed / 2));
                         }
                         else
                         {
