@@ -732,6 +732,14 @@ PrefabInstance:
       propertyPath: _visionAngle
       value: 0.8
       objectReference: {fileID: 0}
+    - target: {fileID: 4945806468928561508, guid: 371c1a5c5220ef54c9f2942568ce71c0, type: 3}
+      propertyPath: _range
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4945806468928561508, guid: 371c1a5c5220ef54c9f2942568ce71c0, type: 3}
+      propertyPath: _centrePoint
+      value: 
+      objectReference: {fileID: 1177152284}
     - target: {fileID: 5178105674707923078, guid: 371c1a5c5220ef54c9f2942568ce71c0, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6.24
@@ -976,6 +984,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1154425038}
   m_CullTransparentMesh: 1
+--- !u!1 &1177152283
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1177152284}
+  m_Layer: 0
+  m_Name: CenterPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1177152284
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177152283}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.08, y: 0.25, z: -7.43}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1257485014
 GameObject:
   m_ObjectHideFlags: 0
@@ -2024,6 +2063,10 @@ PrefabInstance:
       propertyPath: _visionPlayerLayer.m_Bits
       value: 256
       objectReference: {fileID: 0}
+    - target: {fileID: 4945806468928561508, guid: 371c1a5c5220ef54c9f2942568ce71c0, type: 3}
+      propertyPath: _centrePoint
+      value: 
+      objectReference: {fileID: 1177152284}
     - target: {fileID: 5178105674707923078, guid: 371c1a5c5220ef54c9f2942568ce71c0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.736749
@@ -2091,3 +2134,4 @@ SceneRoots:
   - {fileID: 1912970444}
   - {fileID: 1382715772}
   - {fileID: 1303024509}
+  - {fileID: 1177152284}
