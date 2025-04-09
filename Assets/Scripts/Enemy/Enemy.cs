@@ -22,10 +22,10 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
-        // Create a unique material instance per enemy
-        Material matInstance = new Material(_visionConeMaterial);
-        gameObject.AddComponent<MeshRenderer>().material = matInstance;
-        _visionConeMaterial = matInstance; // Save reference to the unique material
+        // Creates a unique material per enemy
+        Material _matInstance = new Material(_visionConeMaterial);
+        gameObject.AddComponent<MeshRenderer>().material = _matInstance;
+        _visionConeMaterial = _matInstance; // Saves the reference to unique material
 
         _meshFilter = gameObject.AddComponent<MeshFilter>();
         _visionConeMesh = new Mesh();
@@ -46,22 +46,22 @@ public class Enemy : MonoBehaviour
         if (player == null)
             return;
 
-        Vector3 directionToPlayer = player.transform.position - transform.position;
-        float distanceToPlayer = directionToPlayer.magnitude;
+        Vector3 _directionToPlayer = player.transform.position - transform.position;
+        float _distanceToPlayer = _directionToPlayer.magnitude;
 
         // Out of range
-        if (distanceToPlayer > _visionRange)
+        if (_distanceToPlayer > _visionRange)
         {
             _playerSeen = false;
             return;
         }
 
         // Check if within angle
-        float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
-        if (angleToPlayer < _visionAngle / 2f)
+        float _angleToPlayer = Vector3.Angle(transform.forward, _directionToPlayer);
+        if (_angleToPlayer < _visionAngle / 2f)
         {
             // Check for line of sight
-            if (!Physics.Raycast(transform.position, directionToPlayer.normalized, distanceToPlayer, _visionObstructingLayer))
+            if (!Physics.Raycast(transform.position, _directionToPlayer.normalized, _distanceToPlayer, _visionObstructingLayer))
             {
                 _playerSeen = true;
                 return;
