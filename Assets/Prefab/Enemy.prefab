@@ -196,8 +196,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _visionConeMaterial: {fileID: 2100000, guid: 1b8c26d45255b9f4b9749494076aaf2b, type: 2}
   _visionRange: 12
-  _visionAngle: 0.8
+  _visionAngle: 35
   _visionObstructingLayer:
     serializedVersion: 2
     m_Bits: 192
   _visionConeResolution: 120
+  _defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  _alertColor: {r: 1, g: 0, b: 0, a: 1}

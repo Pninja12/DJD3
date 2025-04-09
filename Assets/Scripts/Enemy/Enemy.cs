@@ -4,67 +4,124 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    [Header("Vision Settings")]
     [SerializeField] private Material _visionConeMaterial;
-    [SerializeField] private float _visionRange;
-    [SerializeField] private float _visionAngle;
-    [SerializeField] private LayerMask _visionObstructingLayer;
+    [SerializeField] private float _visionRange = 10f;
+    [SerializeField] private float _visionAngle = 90f;
     [SerializeField] private int _visionConeResolution = 120;
-    private float _visionAngleRad; 
-    Mesh _visionConeMesh;
-    MeshFilter _meshFilter;
+    [SerializeField] private LayerMask _visionObstructingLayer;
+
+    [Header("Colors")]
+    [SerializeField] private Color _defaultColor = Color.yellow;
+    [SerializeField] private Color _alertColor = Color.red;
+
+    private float _visionAngleRad;
+    private Mesh _visionConeMesh;
+    private MeshFilter _meshFilter;
+    private bool _playerSeen = false;
 
     void Start()
     {
-        transform.AddComponent<MeshRenderer>().material = _visionConeMaterial;
-        _meshFilter = transform.AddComponent<MeshFilter>();
+        // Create a unique material instance per enemy
+        Material matInstance = new Material(_visionConeMaterial);
+        gameObject.AddComponent<MeshRenderer>().material = matInstance;
+        _visionConeMaterial = matInstance; // Save reference to the unique material
+
+        _meshFilter = gameObject.AddComponent<MeshFilter>();
         _visionConeMesh = new Mesh();
 
         _visionAngleRad = _visionAngle * Mathf.Deg2Rad;
     }
 
+
     void Update()
     {
+        DetectPlayer();
         DrawVisionCone();
+    }
+
+    void DetectPlayer()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+            return;
+
+        Vector3 directionToPlayer = player.transform.position - transform.position;
+        float distanceToPlayer = directionToPlayer.magnitude;
+
+        // Out of range
+        if (distanceToPlayer > _visionRange)
+        {
+            _playerSeen = false;
+            return;
+        }
+
+        // Check if within angle
+        float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+        if (angleToPlayer < _visionAngle / 2f)
+        {
+            // Check for line of sight
+            if (!Physics.Raycast(transform.position, directionToPlayer.normalized, distanceToPlayer, _visionObstructingLayer))
+            {
+                _playerSeen = true;
+                return;
+            }
+        }
+
+        _playerSeen = false;
     }
 
     void DrawVisionCone()
     {
-	    int[] triangles = new int[(_visionConeResolution - 1) * 3];
-    	Vector3[] Vertices = new Vector3[_visionConeResolution + 1];
-        Vertices[0] = Vector3.zero;
-        float _currentangle = -_visionAngle / 2;
-        float _angleIcrement = _visionAngle / (_visionConeResolution - 1);
-        float _sine;
-        float _cosine;
-        
+        int[] triangles = new int[(_visionConeResolution - 1) * 3];
+        Vector3[] vertices = new Vector3[_visionConeResolution + 1];
+        vertices[0] = Vector3.zero;
+
+        float currentAngle = -_visionAngle / 2;
+        float angleIncrement = _visionAngle / (_visionConeResolution - 1);
 
         for (int i = 0; i < _visionConeResolution; i++)
         {
-            _sine = Mathf.Sin(_currentangle);
-            _cosine = Mathf.Cos(_currentangle);
-            Vector3 RaycastDirection = (transform.forward * _cosine) + (transform.right * _sine);
-            Vector3 VertForward = (Vector3.forward * _cosine) + (Vector3.right * _sine);
-            if (Physics.Raycast(transform.position, RaycastDirection, out RaycastHit hit, _visionRange, _visionObstructingLayer))
-            {
-                Vertices[i + 1] = VertForward * hit.distance;
+            float angleRad = currentAngle * Mathf.Deg2Rad;
+            float sine = Mathf.Sin(angleRad);
+            float cosine = Mathf.Cos(angleRad);
 
+            Vector3 raycastDirection = (transform.forward * cosine) + (transform.right * sine);
+            Vector3 vertexDirection = (Vector3.forward * cosine) + (Vector3.right * sine);
+
+            if (Physics.Raycast(transform.position, raycastDirection, out RaycastHit hit, _visionRange, ~0))
+            {
+                vertices[i + 1] = vertexDirection * hit.distance;
             }
             else
             {
-                Vertices[i + 1] = VertForward * _visionRange;
+                vertices[i + 1] = vertexDirection * _visionRange;
             }
 
-            _currentangle += _angleIcrement;
+            currentAngle += angleIncrement;
         }
+
         for (int i = 0, j = 0; i < triangles.Length; i += 3, j++)
         {
             triangles[i] = 0;
             triangles[i + 1] = j + 1;
             triangles[i + 2] = j + 2;
         }
+
         _visionConeMesh.Clear();
-        _visionConeMesh.vertices = Vertices;
+        _visionConeMesh.vertices = vertices;
         _visionConeMesh.triangles = triangles;
         _meshFilter.mesh = _visionConeMesh;
+
+        UpdateVisionConeColor();
+    }
+
+    void UpdateVisionConeColor()
+    {
+        if (_visionConeMaterial != null)
+        {
+            _visionConeMaterial.color = _playerSeen ? _alertColor : _defaultColor;
+        }
     }
 }
+
