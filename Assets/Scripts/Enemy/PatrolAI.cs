@@ -6,21 +6,36 @@ using UnityEngine.AI; //important
 
 public class PatrolAI : MonoBehaviour 
 {
-    public NavMeshAgent _agent;
-    public float _range; 
+    [SerializeField] private NavMeshAgent _agent;
+    [SerializeField] private float _range; 
 
-    public Transform _centrePoint; 
-    
+    [SerializeField] private List<Transform> _points;
+    private byte point = 0;
+
 
     void Start()
     {
-        _agent = GetComponent<NavMeshAgent>();
+        _agent.SetDestination(_points[0].position);
+        point = 0;
+        
     }
 
-    
+
     void Update()
     {
-        if(_agent.remainingDistance <= _agent.stoppingDistance) //done with path
+        if (point >= _points.Count)
+        {
+            point = 0;
+        }
+        
+        print($"_agent.pathPending - {_agent.pathPending}\n_agent.remainingDistance - {_agent.remainingDistance}\n_agent.stoppingDistance - {_agent.stoppingDistance}\n_agent.hasPath - {_agent.hasPath}\n_agent.velocity.sqrMagnitude - {_agent.velocity.sqrMagnitude}");
+        if (!_agent.hasPath && _agent.velocity.sqrMagnitude < 0.1)
+        {
+            _agent.SetDestination(_points[point].position);
+            point++;
+        }
+
+        /* if(_agent.remainingDistance <= _agent.stoppingDistance) //done with path
         {
             Vector3 point;
             if (RandomPoint(_centrePoint.position, _range, out point)) //pass in our centre point and radius of area
@@ -28,7 +43,7 @@ public class PatrolAI : MonoBehaviour
                 Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //so you can see with gizmos
                 _agent.SetDestination(point);
             }
-        }
+        } */
 
     }
     bool RandomPoint(Vector3 center, float range, out Vector3 result)
