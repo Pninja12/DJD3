@@ -53,12 +53,12 @@ public class PlayerMovement : MonoBehaviour
         CheckForJump();
         UpdateRotation();
 
-        if (Input.GetKeyDown(KeyCode.LeftControl))
+        if (Input.GetKeyDown(crouchKey))
         {
             // Start crouching
             StartCrouch();
         }
-        else if (Input.GetKeyUp(KeyCode.LeftControl))
+        else if (Input.GetKeyUp(crouchKey))
         {
             // Stop crouching
             StopCrouch();
