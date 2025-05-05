@@ -24,6 +24,8 @@ public class PatrolAI : MonoBehaviour
     private Transform _player;
     private Vector3 _playerPosition;
 
+    private int _lastPointIndex = -1;
+
 
     void Start()
     {
@@ -34,13 +36,9 @@ public class PatrolAI : MonoBehaviour
     }
 
 
+    
     void Update()
     {
-        if (point >= _points.Count)
-        {
-            point = 0;
-        }
-
         if (_vision.DetectPlayer())
         {
             _playerPosition = _player.position;
@@ -50,46 +48,30 @@ public class PatrolAI : MonoBehaviour
         else
         {
             _playerPosition = Vector3.zero;
-            //print($"_agent.pathPending - {_agent.pathPending}\n_agent.remainingDistance - {_agent.remainingDistance}\n_agent.stoppingDistance - {_agent.stoppingDistance}\n_agent.hasPath - {_agent.hasPath}\n_agent.velocity.sqrMagnitude - {_agent.velocity.sqrMagnitude}");
-            //print($"_agent.hasPath - {_agent.hasPath}\n \n_agent.velocity.sqrMagnitude - {_agent.velocity.sqrMagnitude}");
-            if (!(_agent.hasPath || _agent.pathPending) && _agent.velocity.sqrMagnitude < 0.1)
+
+            if (!(_agent.hasPath || _agent.pathPending) && _agent.velocity.sqrMagnitude < 0.1f)
             {
-                //print(_state);
                 if (_state == EnemyState.Idle)
                 {
-                    if (transform.position.x != _points[point].position.x && 
-                        transform.position.z != _points[point].position.z)
+                    int randomIndex = Random.Range(0, _points.Count);
+
+                    // Evita repetir o mesmo ponto duas vezes seguidas
+                    while (_points.Count > 1 && randomIndex == _lastPointIndex)
                     {
-                        _agent.SetDestination(_points[point].position);
+                        randomIndex = Random.Range(0, _points.Count);
                     }
-                    else
-                    {
-                        point++;
-                        _agent.SetDestination(_points[point - 1].position);
-                        
-                    }
+
+                    _lastPointIndex = randomIndex;
+                    _agent.SetDestination(_points[randomIndex].position);
+
                     _state = EnemyState.Patroling;
-                    //print("Is now patroling");
                     return;
                 }
+
                 if (!_runCourotineOnce)
                     StartCoroutine(LeaveTheIdle(_timeBetweenPatrolPoint));
-
             }
-
-            /* if(_agent.remainingDistance <= _agent.stoppingDistance) //done with path
-            {
-                Vector3 point;
-                if (RandomPoint(_centrePoint.position, _range, out point)) //pass in our centre point and radius of area
-                {
-                    Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //so you can see with gizmos
-                    _agent.SetDestination(point);
-                }
-            } */
         }
-
-        
-
     }
 
     IEnumerator LeaveTheIdle(float timeToWait)

@@ -125,7 +125,6 @@ GameObject:
   - component: {fileID: 8738564817957372149}
   - component: {fileID: 4945806468928561508}
   - component: {fileID: 4391681797327457456}
-  - component: {fileID: 6039320376588173051}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -266,21 +265,6 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &6039320376588173051
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8258555270512825465}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 225e277835970cb4689001434951093c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bulletSpawn: {fileID: 0}
-  _bulletPrefab: {fileID: 0}
-  _bulletSpeed: 10
 --- !u!1 &8958032314047382820
 GameObject:
   m_ObjectHideFlags: 0
