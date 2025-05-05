@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Bullet : MonoBehaviour
 {
@@ -11,10 +12,24 @@ public class Bullet : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Destroy"))
+        string tag = collision.gameObject.tag;
+
+        switch(tag)
         {
-            Destroy(collision.gameObject);
+            case "Destroy":
+                Destroy(collision.gameObject);
+                Destroy(gameObject);
+                break;
+            case "Player":
+                RestartLevel();
+                Destroy(gameObject);
+                break;
         }
-        Destroy(gameObject);
+    }
+
+    void RestartLevel()
+    {
+        Scene _currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(_currentScene.name);
     }
 }

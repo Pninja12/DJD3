@@ -11,6 +11,11 @@ public class Enemy : MonoBehaviour
     [SerializeField] private int _visionConeResolution = 120;
     [SerializeField] private LayerMask _visionObstructingLayer;
 
+    [Header("Shooting")]
+    [SerializeField] private GameObject _bulletPrefab;
+    [SerializeField] private Transform _firePoint;
+    [SerializeField] private float _fireCooldown = 1f;
+
     [Header("Colors")]
     [SerializeField] private Color _defaultColor = Color.yellow;
     [SerializeField] private Color _alertColor = Color.red;
@@ -19,6 +24,7 @@ public class Enemy : MonoBehaviour
     private Mesh _visionConeMesh;
     private MeshFilter _meshFilter;
     private bool _playerSeen = false;
+    private float _lastFireTime;
 
     void Start()
     {
@@ -37,6 +43,12 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         _playerSeen = DetectPlayer();
+
+        if(_playerSeen && Time.time >= _lastFireTime + _fireCooldown)
+        {
+            ShootAtPlayer();
+            _lastFireTime = Time.time;
+        }
         DrawVisionCone();
     }
 
@@ -119,6 +131,24 @@ public class Enemy : MonoBehaviour
         if (_visionConeMaterial != null)
         {
             _visionConeMaterial.color = _playerSeen ? _alertColor : _defaultColor;
+        }
+    }
+
+    void ShootAtPlayer()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        if(player == null || _bulletPrefab == null || _firePoint == null) return;
+
+        Vector3 _direction = (player.transform.position - _firePoint.position).normalized;
+        GameObject _bullet = Instantiate(_bulletPrefab, _firePoint.position, Quaternion.LookRotation(_direction));
+
+        Rigidbody rb = _bullet.GetComponent<Rigidbody>();
+
+        if( rb != null)
+        {
+            float _bulletSpeed = 20f;
+            rb.linearVelocity = _direction * _bulletSpeed;
         }
     }
 }
