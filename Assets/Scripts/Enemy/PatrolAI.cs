@@ -13,6 +13,7 @@ enum EnemyState
 public class PatrolAI : MonoBehaviour 
 {
     [SerializeField] private NavMeshAgent _agent;
+    [SerializeField] private Enemy _vision;
     [SerializeField] private float _range; 
 
     [SerializeField] private List<Transform> _points;
@@ -20,10 +21,13 @@ public class PatrolAI : MonoBehaviour
     private byte point = 0;
     private EnemyState _state;
     private bool _runCourotineOnce = false;
+    private Transform _player;
+    private Vector3 _playerPosition;
 
 
     void Start()
     {
+        _player = GameObject.Find("Player").transform;
         _state = EnemyState.Idle;
         point = 0;
         
@@ -37,33 +41,54 @@ public class PatrolAI : MonoBehaviour
             point = 0;
         }
 
-        //print($"_agent.pathPending - {_agent.pathPending}\n_agent.remainingDistance - {_agent.remainingDistance}\n_agent.stoppingDistance - {_agent.stoppingDistance}\n_agent.hasPath - {_agent.hasPath}\n_agent.velocity.sqrMagnitude - {_agent.velocity.sqrMagnitude}");
-        //print($"_agent.hasPath - {_agent.hasPath}\n \n_agent.velocity.sqrMagnitude - {_agent.velocity.sqrMagnitude}");
-        if (!(_agent.hasPath || _agent.pathPending) && _agent.velocity.sqrMagnitude < 0.1)
+        if (_vision.DetectPlayer())
         {
-            //print(_state);
-            if (_state == EnemyState.Idle && _points.Count > 2)
+            _playerPosition = _player.position;
+            _agent.SetDestination(_playerPosition);
+            _state = EnemyState.FollowingPlayer;
+        }
+        else
+        {
+            _playerPosition = Vector3.zero;
+            //print($"_agent.pathPending - {_agent.pathPending}\n_agent.remainingDistance - {_agent.remainingDistance}\n_agent.stoppingDistance - {_agent.stoppingDistance}\n_agent.hasPath - {_agent.hasPath}\n_agent.velocity.sqrMagnitude - {_agent.velocity.sqrMagnitude}");
+            //print($"_agent.hasPath - {_agent.hasPath}\n \n_agent.velocity.sqrMagnitude - {_agent.velocity.sqrMagnitude}");
+            if (!(_agent.hasPath || _agent.pathPending) && _agent.velocity.sqrMagnitude < 0.1)
             {
-                _agent.SetDestination(_points[point].position);
-                _state = EnemyState.Patroling;
-                //print("Is now patroling");
-                point++;
-                return;
+                //print(_state);
+                if (_state == EnemyState.Idle)
+                {
+                    if (transform.position.x != _points[point].position.x && 
+                        transform.position.z != _points[point].position.z)
+                    {
+                        _agent.SetDestination(_points[point].position);
+                    }
+                    else
+                    {
+                        point++;
+                        _agent.SetDestination(_points[point - 1].position);
+                        
+                    }
+                    _state = EnemyState.Patroling;
+                    //print("Is now patroling");
+                    return;
+                }
+                if (!_runCourotineOnce)
+                    StartCoroutine(LeaveTheIdle(_timeBetweenPatrolPoint));
+
             }
-            if(!_runCourotineOnce)
-                StartCoroutine(LeaveTheIdle(_timeBetweenPatrolPoint));
-            
+
+            /* if(_agent.remainingDistance <= _agent.stoppingDistance) //done with path
+            {
+                Vector3 point;
+                if (RandomPoint(_centrePoint.position, _range, out point)) //pass in our centre point and radius of area
+                {
+                    Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //so you can see with gizmos
+                    _agent.SetDestination(point);
+                }
+            } */
         }
 
-        /* if(_agent.remainingDistance <= _agent.stoppingDistance) //done with path
-        {
-            Vector3 point;
-            if (RandomPoint(_centrePoint.position, _range, out point)) //pass in our centre point and radius of area
-            {
-                Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //so you can see with gizmos
-                _agent.SetDestination(point);
-            }
-        } */
+        
 
     }
 

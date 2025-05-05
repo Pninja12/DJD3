@@ -36,15 +36,15 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        DetectPlayer();
+        _playerSeen = DetectPlayer();
         DrawVisionCone();
     }
 
-    void DetectPlayer()
+    public bool DetectPlayer()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null)
-            return;
+            return false;
 
         Vector3 _directionToPlayer = player.transform.position - transform.position;
         float _distanceToPlayer = _directionToPlayer.magnitude;
@@ -52,8 +52,7 @@ public class Enemy : MonoBehaviour
         // Out of range
         if (_distanceToPlayer > _visionRange)
         {
-            _playerSeen = false;
-            return;
+            return false;
         }
 
         // Check if within angle
@@ -63,12 +62,11 @@ public class Enemy : MonoBehaviour
             // Check for line of sight
             if (!Physics.Raycast(transform.position, _directionToPlayer.normalized, _distanceToPlayer, _visionObstructingLayer))
             {
-                _playerSeen = true;
-                return;
+                return true;
             }
         }
 
-        _playerSeen = false;
+        return false;
     }
 
     void DrawVisionCone()

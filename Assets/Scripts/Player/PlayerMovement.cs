@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _gravityAcceleration;
     [SerializeField] private float _maxFallSpeed;
     [SerializeField] private float _maxForwardSpeed;
+    [SerializeField] private float _sprintSpeed;
     [SerializeField] private float _maxBackwardSpeed;    
     [SerializeField] private float _maxStrafeSpeed;
     [SerializeField] private float _jumpSpeed;
@@ -15,7 +16,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _rotationalSpeed = 2;
     [SerializeField] private float _crouchHeight;
     [SerializeField] private float _defaultHeight;
-    [SerializeField] private KeyCode crouchKey = KeyCode.LeftControl;
+    [SerializeField] private KeyCode _crouchKey = KeyCode.LeftControl;
+    [SerializeField] private KeyCode _sprintKey = KeyCode.LeftShift;
 
     private CharacterController _controller;
     private Vector3 _velocityHor;
@@ -53,15 +55,25 @@ public class PlayerMovement : MonoBehaviour
         CheckForJump();
         UpdateRotation();
 
-        if (Input.GetKeyDown(crouchKey))
+        if (Input.GetKeyDown(_crouchKey))
         {
             // Start crouching
             StartCrouch();
         }
-        else if (Input.GetKeyUp(crouchKey))
+        else if (Input.GetKeyUp(_crouchKey))
         {
             // Stop crouching
             StopCrouch();
+        }
+        if (Input.GetKeyDown(_sprintKey))
+        {
+            // change velocity
+            _maxForwardSpeed += _sprintSpeed;
+        }
+        else if (Input.GetKeyUp(_sprintKey))
+        {
+            // change velocity
+            _maxForwardSpeed -= _sprintSpeed;
         }
     }
 
