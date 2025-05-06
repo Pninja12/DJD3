@@ -10,7 +10,7 @@ public class Bullet : MonoBehaviour
         Destroy(gameObject, life);
     }
 
-    void OnCollisionEnter(Collision collision)
+    void OnTriggerEnter(Collider collision)
     {
         string tag = collision.gameObject.tag;
 
