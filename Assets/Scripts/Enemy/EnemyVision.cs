@@ -1,6 +1,7 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using NaughtyAttributes;
 
 public class Enemy : MonoBehaviour
 {
@@ -12,8 +13,12 @@ public class Enemy : MonoBehaviour
     [SerializeField] private LayerMask _visionObstructingLayer;
 
     [Header("Shooting")]
+    [SerializeField] private bool _hasGun;
+    [ShowIf("_hasGun")]
     [SerializeField] private GameObject _bulletPrefab;
+    [ShowIf("_hasGun")]
     [SerializeField] private Transform _firePoint;
+    [ShowIf("_hasGun")]
     [SerializeField] private float _fireCooldown = 1f;
 
     [Header("Colors")]
@@ -43,11 +48,13 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         _playerSeen = DetectPlayer();
-
-        if(_playerSeen && Time.time >= _lastFireTime + _fireCooldown)
+        if(_hasGun)
         {
-            ShootAtPlayer();
-            _lastFireTime = Time.time;
+            if (_playerSeen && Time.time >= _lastFireTime + _fireCooldown)
+            {
+                ShootAtPlayer();
+                _lastFireTime = Time.time;
+            }
         }
         DrawVisionCone();
     }

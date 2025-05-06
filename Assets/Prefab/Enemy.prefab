@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 4391681797327457456}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -238,7 +238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _agent: {fileID: 4391681797327457456}
-  _vision: {fileID: 0}
+  _vision: {fileID: 4620927082839530367}
   _range: 5
   _points:
   - {fileID: 0}
@@ -347,8 +347,9 @@ MonoBehaviour:
   _visionObstructingLayer:
     serializedVersion: 2
     m_Bits: 192
+  _hasGun: 0
   _bulletPrefab: {fileID: 0}
-  _firePoint: {fileID: 0}
+  _firePoint: {fileID: 908591198454069709}
   _fireCooldown: 1
   _defaultColor: {r: 1, g: 1, b: 1, a: 1}
   _alertColor: {r: 1, g: 0, b: 0, a: 1}

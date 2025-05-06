@@ -14,7 +14,7 @@ public class Bullet : MonoBehaviour
     {
         string tag = collision.gameObject.tag;
 
-        switch(tag)
+        switch (tag)
         {
             case "Destroy":
                 Destroy(collision.gameObject);
@@ -22,6 +22,11 @@ public class Bullet : MonoBehaviour
                 break;
             case "Player":
                 RestartLevel();
+                Destroy(gameObject);
+                break;
+            case "Enemy":
+                PatrolAI enemy = collision.gameObject.GetComponentInParent<PatrolAI>();
+                enemy.Death();
                 Destroy(gameObject);
                 break;
         }

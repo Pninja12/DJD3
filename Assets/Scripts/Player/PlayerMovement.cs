@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _maxFallSpeed;
     [SerializeField] private float _maxForwardSpeed;
     [SerializeField] private float _sprintSpeed;
-    [SerializeField] private float _maxBackwardSpeed;    
+    [SerializeField] private float _maxBackwardSpeed;
     [SerializeField] private float _maxStrafeSpeed;
     [SerializeField] private float _jumpSpeed;
     [SerializeField] private Transform _camera;
@@ -23,22 +23,22 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _velocityHor;
     private Vector3 _velocityVer;
     private Vector3 _motion;
-    private bool    _jump;
-    private bool    _cameraLock;
-    private bool    _arrivedAtCamera;
+    private bool _jump;
+    private bool _cameraLock;
+    private bool _arrivedAtCamera;
     private float _rotateTo = 0;
-    private float   _rotateWhereWeAre;
+    private float _rotateWhereWeAre;
     private bool _isCrouching = false;
-    
+
 
     void Start()
     {
-        _controller     = GetComponent<CharacterController>();
-        _velocityHor    = Vector3.zero;
-        _velocityVer    = Vector3.zero;
-        _motion         = Vector3.zero;
-        _jump           = false;
-        _cameraLock     = false;
+        _controller = GetComponent<CharacterController>();
+        _velocityHor = Vector3.zero;
+        _velocityVer = Vector3.zero;
+        _motion = Vector3.zero;
+        _jump = false;
+        _cameraLock = false;
         _arrivedAtCamera = false;
 
         HideCursor();
@@ -87,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
             //Lock para contar apenas a primeira vez
             if (!_cameraLock)
             {
-                
+
                 _arrivedAtCamera = false;
             }
             _rotateTo = _camera.eulerAngles.y;
@@ -201,7 +201,7 @@ public class PlayerMovement : MonoBehaviour
                 if (_rotateWhereWeAre < 0)
                     _rotateWhereWeAre = 360 + _rotateWhereWeAre;
 
-                
+
                 if (_rotateWhereWeAre < 180)
                 {
                     //Caso a velocidade ultrapasse o destino
@@ -221,7 +221,7 @@ public class PlayerMovement : MonoBehaviour
                             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
                             _scriptCamera.DefiniteRotate(_rotateTo);
                         }
-                        
+
                     }
                     else
                     {
@@ -241,15 +241,15 @@ public class PlayerMovement : MonoBehaviour
 
                         if (conta > _rotationalSpeed / 2)
                         {
-                            transform.Rotate(0f, _rotationalSpeed/2, 0f);
-                            _scriptCamera.Rotate(-(_rotationalSpeed/2));
+                            transform.Rotate(0f, _rotationalSpeed / 2, 0f);
+                            _scriptCamera.Rotate(-(_rotationalSpeed / 2));
                         }
                         else
                         {
                             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, _rotateTo, transform.rotation.eulerAngles.z);
                             _scriptCamera.DefiniteRotate(_rotateTo);
                         }
-                        
+
                     }
 
                     else
@@ -266,8 +266,8 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
-            
-            
+
+
     }
 
     private void CheckForJump()
@@ -278,7 +278,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void StartCrouch()
     {
-        if(!_isCrouching)
+        if (!_isCrouching)
         {
             _controller.height = _crouchHeight;
             _isCrouching = true;
@@ -287,17 +287,17 @@ public class PlayerMovement : MonoBehaviour
 
     private void StopCrouch()
     {
-        if(_isCrouching)
+        if (_isCrouching)
         {
             _controller.height = _defaultHeight;
             _isCrouching = false;
         }
     }
-    
+
 
     void FixedUpdate()
     {
-        
+
         UpdateVelocityHor();
         UpdateVelocityVer();
         UpdatePosition();
@@ -305,8 +305,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateVelocityHor()
     {
-        float forwardAxis   = Input.GetAxis("Forward");
-        float strafeAxis    = Input.GetAxis("Strafe");
+        float forwardAxis = Input.GetAxis("Forward");
+        float strafeAxis = Input.GetAxis("Strafe");
 
         _velocityHor.x = strafeAxis * _maxStrafeSpeed;
 
@@ -350,5 +350,21 @@ public class PlayerMovement : MonoBehaviour
         _motion = transform.TransformVector(_motion);
 
         _controller.Move(_motion);
+    }
+
+    private void OnTriggerStay(Collider collided)
+    {
+        if (collided.CompareTag("TakeDown") && Input.GetKeyDown(KeyCode.F))
+        {
+            Debug.Log("Entered enemy's takedown zone!");
+
+            // Get a reference to the enemy script (on parent or root of the trigger)
+            PatrolAI enemy = collided.GetComponentInParent<PatrolAI>(); // or .GetComponent<Enemy>() if same GameObject
+
+            if (enemy != null && enemy.GetState() != EnemyState.FollowingPlayer)
+            {
+                enemy.Death();
+            }
+        }
     }
 }

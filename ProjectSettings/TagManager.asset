@@ -6,6 +6,8 @@ TagManager:
   tags:
   - WorldBoundary
   - Destroy
+  - Enemy
+  - TakeDown
   layers:
   - Default
   - TransparentFX
@@ -16,7 +18,7 @@ TagManager:
   - Walls
   - Obstacles
   - Player
-  - 
+  - Enemy
   - 
   - 
   - 
