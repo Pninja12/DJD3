@@ -27,11 +27,19 @@ public class PatrolAI : MonoBehaviour
     private Transform _player;
     private Vector3 _playerPosition;
 
+    [SerializeField] private Animator _anim;
+    [SerializeField] private float _aggroRange = 5f;
+
+    private static List<PatrolAI> _enemies = new List<PatrolAI>();
+
+
     private int _lastPointIndex = -1;
 
 
     void Start()
     {
+        _enemies.Add(this);
+        if(_anim == null) _anim = GetComponent<Animator>();
         _player = GameObject.Find("Player").transform;
         _state = EnemyState.Idle;
         //point = 0;
@@ -46,8 +54,11 @@ public class PatrolAI : MonoBehaviour
         if (_vision.DetectPlayer())
         {
             _playerPosition = _player.position;
-            _agent.SetDestination(_playerPosition);
-            _state = EnemyState.FollowingPlayer;
+            ChaseMode();
+
+            _anim.ResetTrigger("Patrol");
+            _anim.ResetTrigger("turn");
+            _anim.ResetTrigger("stopwalk");
         }
         else
         {
@@ -69,8 +80,9 @@ public class PatrolAI : MonoBehaviour
 
                         _lastPointIndex = randomIndex;
                         _agent.SetDestination(_points[randomIndex].position);
-
                         _state = EnemyState.Patroling;
+
+                        StopPatrolAndTurn();
                         return;
                     }
 
@@ -90,6 +102,13 @@ public class PatrolAI : MonoBehaviour
         //print("Is now Idle");
         _runCourotineOnce = false;
     }
+
+    IEnumerator StartWalkingAfterTurn(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        StartPatrol();
+    }
+
     bool RandomPoint(Vector3 center, float range, out Vector3 result)
     {
 
@@ -116,14 +135,15 @@ public class PatrolAI : MonoBehaviour
     {
         if (_health > 0)
         {
-            _state = EnemyState.TakeDamage;
             _health--;
+            ChaseMode();
 
         }
         else
         {
             _state = EnemyState.Dead;
             Destroy(gameObject);
+            _enemies.Remove(this);
         }
 
     }
@@ -137,5 +157,31 @@ public class PatrolAI : MonoBehaviour
         }
     }
 
+    private void StartPatrol()
+    {
+        _anim.ResetTrigger("turn");
+        _anim.SetTrigger("Patrol");
+    }
+
+    private void StopPatrolAndTurn()
+    {
+        _anim.ResetTrigger("Patrol");
+        _anim.SetTrigger("turn");
+        StartCoroutine(StartWalkingAfterTurn(0.5f));
+    }
+
+    public void ChaseMode()
+    {
+        _state = EnemyState.FollowingPlayer;
+        _agent.SetDestination(_player.position);
+
+        foreach(PatrolAI enemy in _enemies)
+        {
+            if((transform.position - enemy.transform.position).magnitude <= _aggroRange && enemy._state != EnemyState.FollowingPlayer)
+            {
+                enemy.GetComponent<PatrolAI>().ChaseMode();
+            }
+        }
+    }
     
 }

@@ -240,9 +240,12 @@ MonoBehaviour:
   _agent: {fileID: 4391681797327457456}
   _vision: {fileID: 4620927082839530367}
   _range: 5
+  _health: 3
   _points:
   - {fileID: 0}
   _timeBetweenPatrolPoint: 0
+  _anim: {fileID: 0}
+  _aggroRange: 5000000
 --- !u!195 &4391681797327457456
 NavMeshAgent:
   m_ObjectHideFlags: 0
