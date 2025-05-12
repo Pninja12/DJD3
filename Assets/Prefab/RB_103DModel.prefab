@@ -1207,6 +1207,7 @@ MonoBehaviour:
   - {fileID: 0}
   _timeBetweenPatrolPoint: 3
   _anim: {fileID: 8654991618477465366}
+  _aggroRange: 50
 --- !u!195 &5363899529231390046
 NavMeshAgent:
   m_ObjectHideFlags: 0

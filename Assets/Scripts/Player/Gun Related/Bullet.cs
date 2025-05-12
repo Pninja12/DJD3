@@ -17,7 +17,15 @@ public class Bullet : MonoBehaviour
         switch (tag)
         {
             case "Destroy":
-                Destroy(collision.gameObject);
+                var _destructible = collision.gameObject.GetComponent<Distract>();
+                if(_destructible != null)
+                {
+                    _destructible.DestroyObject();
+                }
+                else
+                {
+                    Destroy(collision.gameObject);
+                }
                 Destroy(gameObject);
                 break;
             case "Player":

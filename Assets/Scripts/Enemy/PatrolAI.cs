@@ -28,7 +28,7 @@ public class PatrolAI : MonoBehaviour
     private Vector3 _playerPosition;
 
     [SerializeField] private Animator _anim;
-    [SerializeField] private float _aggroRange = 5f;
+    [SerializeField] private float _aggroRange = 100f;
 
     private static List<PatrolAI> _enemies = new List<PatrolAI>();
 
@@ -38,7 +38,7 @@ public class PatrolAI : MonoBehaviour
 
     void Start()
     {
-        _enemies.Add(this);
+        if(!_enemies.Contains(this)) _enemies.Add(this);
         if(_anim == null) _anim = GetComponent<Animator>();
         _player = GameObject.Find("Player").transform;
         _state = EnemyState.Idle;
@@ -170,18 +170,41 @@ public class PatrolAI : MonoBehaviour
         StartCoroutine(StartWalkingAfterTurn(0.5f));
     }
 
-    public void ChaseMode()
+    public void ChaseMode(bool propagate = true)
     {
+        if (_state == EnemyState.FollowingPlayer) return;
+
         _state = EnemyState.FollowingPlayer;
         _agent.SetDestination(_player.position);
 
-        foreach(PatrolAI enemy in _enemies)
+        _anim.ResetTrigger("Patrol");
+        _anim.ResetTrigger("turn");
+        _anim.ResetTrigger("stopwalk");
+
+        if (!propagate) return;
+
+        foreach (PatrolAI enemy in _enemies)
         {
-            if((transform.position - enemy.transform.position).magnitude <= _aggroRange && enemy._state != EnemyState.FollowingPlayer)
+            if (enemy != this &&
+                enemy != null &&
+                Vector3.Distance(transform.position, enemy.transform.position) <= _aggroRange &&
+                enemy._state != EnemyState.FollowingPlayer)
             {
-                enemy.GetComponent<PatrolAI>().ChaseMode();
+                enemy.ChaseMode(false);
             }
         }
+    }
+
+    public void InvestigatePosition(Vector3 position)
+    {
+        if(_state == EnemyState.Dead || _state == EnemyState.FollowingPlayer) return;
+
+        _state = EnemyState.FollowingPlayer;
+        _agent.SetDestination(position);
+
+        _anim.ResetTrigger("Patrol");
+        _anim.ResetTrigger("turn");
+        _anim.ResetTrigger("stopwalk");
     }
     
 }
