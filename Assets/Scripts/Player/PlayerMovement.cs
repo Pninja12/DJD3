@@ -360,11 +360,25 @@ public class PlayerMovement : MonoBehaviour
 
             // Get a reference to the enemy script (on parent or root of the trigger)
             PatrolAI enemy = collided.GetComponentInParent<PatrolAI>(); // or .GetComponent<Enemy>() if same GameObject
+            if (enemy == null)
+            {
+                Transform parent = collided.transform.parent;
+                foreach (Transform child in parent)
+                {
+                    Debug.Log("Child: " + child.name);
+
+                    // Example: Find a child with a specific component
+                    if (child.GetComponent<PatrolAI>() != null)
+                    {
+                        enemy = child.GetComponentInParent<PatrolAI>();
+                    }
+                }
+            }
 
             if (enemy != null && enemy.GetState() != EnemyState.FollowingPlayer)
-            {
-                enemy.Death();
-            }
+                {
+                    enemy.Death(10);
+                }
         }
     }
 }

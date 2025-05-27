@@ -62,7 +62,7 @@ public class PatrolAI : MonoBehaviour
         }
         else
         {
-            if (_points.Count > 0)
+            if (_points.Count > 0 && _points != null)
             {
                 _playerPosition = Vector3.zero;
 
@@ -131,29 +131,36 @@ public class PatrolAI : MonoBehaviour
         return _state;
     }
 
-    public void Death()
+    public void Death(int damage = 1)
     {
-        if (_health > 0)
-        {
-            _health--;
-            ChaseMode();
-
-        }
-        else
+        if (damage >= _health)
         {
             _state = EnemyState.Dead;
             Destroy(gameObject);
             _enemies.Remove(this);
+        }
+        else
+        {
+            _health = _health - damage;
+            ChaseMode();
         }
 
     }
 
     void OnTriggerEnter(Collider collision)
     {
+        
         if (collision.gameObject.tag == "Player")
         {
-            Scene _currentScene = SceneManager.GetActiveScene();
-            SceneManager.LoadScene(_currentScene.name);
+            print(collision.gameObject.layer);
+            if (gameObject.layer == LayerMask.NameToLayer("Enemy") && collision.bounds.Intersects(GetComponent<Collider>().bounds))
+            {
+                Debug.Log(gameObject.name + " collided with Player — restarting scene.");
+                Debug.Log("This object is on the 'Enemy' layer");
+                Scene _currentScene = SceneManager.GetActiveScene();
+                SceneManager.LoadScene(_currentScene.name);
+            }
+
         }
     }
 
