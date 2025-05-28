@@ -336,7 +336,7 @@ public class PlayerMovement : MonoBehaviour
             _jump = false;
         }
         else if (_controller.isGrounded)
-            _velocityVer.y = -0.1f;
+            _velocityVer.y = -1f;
         else if (_velocityVer.y > -_maxFallSpeed)
         {
             _velocityVer.y += _gravityAcceleration * Time.fixedDeltaTime;
