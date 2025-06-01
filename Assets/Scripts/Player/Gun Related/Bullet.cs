@@ -3,11 +3,12 @@ using UnityEngine.SceneManagement;
 
 public class Bullet : MonoBehaviour
 {
-   private float life = 3;
+   private float _life = 3f;
+   
 
     void Awake()
     {
-        Destroy(gameObject, life);
+        Destroy(gameObject, _life);
     }
 
     void OnTriggerEnter(Collider collision)
