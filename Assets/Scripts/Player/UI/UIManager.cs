@@ -26,7 +26,9 @@ public class UIManager : MonoBehaviour
 
 
         if (Input.GetButtonDown("Cancel"))
-        {
+        {   
+            //Adicionado pelo carvalho, rever esta parte sff
+            //Time.timeScale = 0f;
             _pauseMenu.SetActive(!_pauseMenu.activeSelf);
         }
         

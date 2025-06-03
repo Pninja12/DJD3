@@ -7,8 +7,13 @@ public class MenuScript : MonoBehaviour
     {
 
     }
+    public void CurrentScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        
 
-    
+
+    }
     public void NextScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -26,7 +31,7 @@ public class MenuScript : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
-
+        Debug.Log("Quit");
 
 
     }
