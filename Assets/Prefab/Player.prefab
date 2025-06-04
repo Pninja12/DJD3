@@ -92,7 +92,7 @@ CharacterController:
   m_Height: 2
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.5
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
@@ -111,7 +111,7 @@ MonoBehaviour:
   _gravityAcceleration: -30
   _maxFallSpeed: 30
   _maxForwardSpeed: 4
-  _sprintSpeed: 4
+  _sprintSpeed: 7
   _maxBackwardSpeed: 4
   _maxStrafeSpeed: 3
   _jumpSpeed: 10
@@ -370,6 +370,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   _deocclusionThreshold: 1
   _deocclusionSpeed: 25
+  ui: {fileID: 0}
 --- !u!1 &4397001957693266431
 GameObject:
   m_ObjectHideFlags: 0
@@ -677,7 +678,7 @@ Transform:
   m_GameObject: {fileID: 8646858466798208080}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.487, y: 1.171, z: 0.405}
+  m_LocalPosition: {x: 0, y: 0, z: 0.5}
   m_LocalScale: {x: 0.2, y: 0.5, z: 0.20000002}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -775,6 +776,8 @@ MonoBehaviour:
   _bulletSpawn: {fileID: 4884484556948377383}
   _bulletPrefab: {fileID: 6996698088752480892, guid: 55189a56dea004248a3e293620edda56, type: 3}
   _bulletSpeed: 50
+  _maxAmmo: 15
+  ui: {fileID: 0}
 --- !u!1 &8838114299085340646
 GameObject:
   m_ObjectHideFlags: 0
@@ -801,7 +804,7 @@ Transform:
   m_GameObject: {fileID: 8838114299085340646}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

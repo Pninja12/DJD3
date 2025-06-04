@@ -8,6 +8,7 @@ public class Gun : MonoBehaviour
 
     [SerializeField] private int _maxAmmo = 3;
     private int _currentAmmo;
+    [SerializeField] private UIManager ui;
 
     void Start()
     {
@@ -16,7 +17,7 @@ public class Gun : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(0) && _currentAmmo > 0)
+        if((Input.GetMouseButtonDown(0) && _currentAmmo > 0) && !ui.GetPause())
         {
             var bullet = Instantiate(_bulletPrefab, _bulletSpawn.position, _bulletSpawn.rotation);
             bullet.GetComponent<Rigidbody>().linearVelocity = _bulletSpawn.forward * _bulletSpeed;

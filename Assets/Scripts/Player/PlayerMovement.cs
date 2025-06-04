@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _defaultHeight;
     [SerializeField] private KeyCode _crouchKey = KeyCode.LeftControl;
     [SerializeField] private KeyCode _sprintKey = KeyCode.LeftShift;
+    [SerializeField] private UIManager ui;
 
     private CharacterController _controller;
     private Vector3 _velocityHor;
@@ -51,30 +52,33 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (!ui.GetPause())
+        {
+            CheckForJump();
+            UpdateRotation();
 
-        CheckForJump();
-        UpdateRotation();
-
-        if (Input.GetKeyDown(_crouchKey))
-        {
-            // Start crouching
-            StartCrouch();
+            if (Input.GetKeyDown(_crouchKey))
+            {
+                // Start crouching
+                StartCrouch();
+            }
+            else if (Input.GetKeyUp(_crouchKey))
+            {
+                // Stop crouching
+                StopCrouch();
+            }
+            if (Input.GetKeyDown(_sprintKey))
+            {
+                // change velocity
+                _maxForwardSpeed += _sprintSpeed;
+            }
+            else if (Input.GetKeyUp(_sprintKey))
+            {
+                // change velocity
+                _maxForwardSpeed -= _sprintSpeed;
+            }
         }
-        else if (Input.GetKeyUp(_crouchKey))
-        {
-            // Stop crouching
-            StopCrouch();
-        }
-        if (Input.GetKeyDown(_sprintKey))
-        {
-            // change velocity
-            _maxForwardSpeed += _sprintSpeed;
-        }
-        else if (Input.GetKeyUp(_sprintKey))
-        {
-            // change velocity
-            _maxForwardSpeed -= _sprintSpeed;
-        }
+            
     }
 
     private void UpdateRotation()

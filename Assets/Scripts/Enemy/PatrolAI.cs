@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI; //important
 using UnityEngine.SceneManagement;
@@ -51,14 +52,17 @@ public class PatrolAI : MonoBehaviour
 
     void Update()
     {
+
+        if (_state == EnemyState.Idle)
+            _anim.SetBool("Patrol", false);
+        else if (_state == EnemyState.Patroling)
+            _anim.SetBool("Patrol", true);
+  
+        
         if (_vision.DetectPlayer())
         {
             _playerPosition = _player.position;
             ChaseMode();
-
-            _anim.ResetTrigger("Patrol");
-            _anim.ResetTrigger("turn");
-            _anim.ResetTrigger("stopwalk");
         }
         else
         {
@@ -68,7 +72,8 @@ public class PatrolAI : MonoBehaviour
 
                 if (!(_agent.hasPath || _agent.pathPending) && _agent.velocity.sqrMagnitude < 0.1f)
                 {
-                    if (_state == EnemyState.Idle)
+                    //_anim.SetTrigger("PatrolToStop");
+                    if (_state == EnemyState.Idle && !_runCourotineOnce)
                     {
                         int randomIndex = Random.Range(0, _points.Count);
 
@@ -81,8 +86,6 @@ public class PatrolAI : MonoBehaviour
                         _lastPointIndex = randomIndex;
                         _agent.SetDestination(_points[randomIndex].position);
                         _state = EnemyState.Patroling;
-
-                        StopPatrolAndTurn();
                         return;
                     }
 
@@ -90,23 +93,16 @@ public class PatrolAI : MonoBehaviour
                         StartCoroutine(LeaveTheIdle(_timeBetweenPatrolPoint));
                 }
             }
-            
         }
     }
 
     IEnumerator LeaveTheIdle(float timeToWait)
     {
         _runCourotineOnce = true;
-        yield return new WaitForSeconds(timeToWait);
         _state = EnemyState.Idle;
+        yield return new WaitForSeconds(timeToWait);
         //print("Is now Idle");
         _runCourotineOnce = false;
-    }
-
-    IEnumerator StartWalkingAfterTurn(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        StartPatrol();
     }
 
     bool RandomPoint(Vector3 center, float range, out Vector3 result)
@@ -164,19 +160,6 @@ public class PatrolAI : MonoBehaviour
         }
     }
 
-    private void StartPatrol()
-    {
-        _anim.ResetTrigger("turn");
-        _anim.SetTrigger("Patrol");
-    }
-
-    private void StopPatrolAndTurn()
-    {
-        _anim.ResetTrigger("Patrol");
-        _anim.SetTrigger("turn");
-        StartCoroutine(StartWalkingAfterTurn(0.5f));
-    }
-
     public void ChaseMode(bool propagate = true)
     {
         if (_state == EnemyState.FollowingPlayer) return;
@@ -184,9 +167,7 @@ public class PatrolAI : MonoBehaviour
         _state = EnemyState.FollowingPlayer;
         _agent.SetDestination(_player.position);
 
-        _anim.ResetTrigger("Patrol");
-        _anim.ResetTrigger("turn");
-        _anim.ResetTrigger("stopwalk");
+        
 
         if (!propagate) return;
 
@@ -209,9 +190,7 @@ public class PatrolAI : MonoBehaviour
         _state = EnemyState.FollowingPlayer;
         _agent.SetDestination(position);
 
-        _anim.ResetTrigger("Patrol");
-        _anim.ResetTrigger("turn");
-        _anim.ResetTrigger("stopwalk");
+        
     }
     
 }

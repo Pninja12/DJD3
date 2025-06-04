@@ -14,8 +14,9 @@ public class CameraControl : MonoBehaviour
     [SerializeField] private LayerMask  _deocclusionLayerMask;
     [SerializeField] private float      _deocclusionThreshold;
     [SerializeField] private float      _deocclusionSpeed;
+    [SerializeField] private UIManager ui;
 
-    private Transform   _cameraTransform;
+    private Transform _cameraTransform;
     private Vector3     _rotation;
     private Vector3     _position;
     private float       _zoomAcceleration;
@@ -54,11 +55,15 @@ public class CameraControl : MonoBehaviour
 
     void Update()
     {
-        UpdateRotation();
-        UpdateHeight();
-        UpdateZoom();
+        if (!ui.GetPause())
+        {
+            UpdateRotation();
+            UpdateHeight();
+            UpdateZoom();
 
-        PreventOcclusion();
+            PreventOcclusion();
+        }
+        
     }
 
     private void UpdateRotation()
