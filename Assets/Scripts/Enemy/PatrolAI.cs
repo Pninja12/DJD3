@@ -162,10 +162,10 @@ public class PatrolAI : MonoBehaviour
 
     public void ChaseMode(bool propagate = true)
     {
-        if (_state == EnemyState.FollowingPlayer) return;
+        //if (_state == EnemyState.FollowingPlayer) return;
 
         _state = EnemyState.FollowingPlayer;
-        _agent.SetDestination(_player.position);
+        _agent.SetDestination(_playerPosition);
 
         
 

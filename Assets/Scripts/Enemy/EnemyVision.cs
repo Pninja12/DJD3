@@ -48,6 +48,7 @@ public class Enemy : MonoBehaviour
         {
             if (!Physics.Raycast(transform.position, directionToPlayer.normalized, distanceToPlayer, _visionObstructingLayer))
             {
+                print("See player");
                 return true;
             }
         }

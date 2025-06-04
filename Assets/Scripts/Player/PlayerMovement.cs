@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private KeyCode _crouchKey = KeyCode.LeftControl;
     [SerializeField] private KeyCode _sprintKey = KeyCode.LeftShift;
     [SerializeField] private UIManager ui;
+    [SerializeField] private Gun _gun;
 
     private CharacterController _controller;
     private Vector3 _velocityHor;
@@ -380,9 +381,14 @@ public class PlayerMovement : MonoBehaviour
             }
 
             if (enemy != null && enemy.GetState() != EnemyState.FollowingPlayer)
-                {
-                    enemy.Death(10);
-                }
+            {
+                enemy.Death(10);
+            }
+        }
+
+        if (collided.gameObject.layer == LayerMask.NameToLayer("Loot") && Input.GetKeyDown(KeyCode.F))
+        {
+            _gun.AddAmo(Random.Range(1, 4));
         }
     }
 }

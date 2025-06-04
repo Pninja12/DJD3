@@ -122,6 +122,8 @@ MonoBehaviour:
   _defaultHeight: 2
   _crouchKey: 306
   _sprintKey: 304
+  ui: {fileID: 0}
+  _gun: {fileID: 1127741272592379049}
 --- !u!136 &442670398926788058
 CapsuleCollider:
   m_ObjectHideFlags: 0
