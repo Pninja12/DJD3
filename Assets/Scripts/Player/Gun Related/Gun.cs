@@ -1,7 +1,11 @@
 using UnityEngine;
-
+using UnityEngine.UI;
+using TMPro;
 public class Gun : MonoBehaviour
 {
+    //Add pelo carvalho
+    public TextMeshProUGUI TextBulletsUI;
+    //
     public Transform _bulletSpawn;
     public GameObject _bulletPrefab;
     public float _bulletSpeed = 10;
@@ -13,16 +17,22 @@ public class Gun : MonoBehaviour
     void Start()
     {
         _currentAmmo = _maxAmmo;
+        //Add pelo carvalho
+        TextBulletsUI.text = _currentAmmo.ToString();
+        //
     }
     // Update is called once per frame
     void Update()
     {
-        if((Input.GetMouseButtonDown(0) && _currentAmmo > 0) && !ui.GetPause())
+        if ((Input.GetMouseButtonDown(0) && _currentAmmo > 0) && !ui.GetPause())
         {
             var bullet = Instantiate(_bulletPrefab, _bulletSpawn.position, _bulletSpawn.rotation);
             bullet.GetComponent<Rigidbody>().linearVelocity = _bulletSpawn.forward * _bulletSpeed;
 
             _currentAmmo--;
+            //Add pelo carvalho
+            TextBulletsUI.text = _currentAmmo.ToString();
+            //
         }
     }
 
