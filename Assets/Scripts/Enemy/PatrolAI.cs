@@ -20,6 +20,8 @@ public class PatrolAI : MonoBehaviour
     [SerializeField] private float _range;
     [SerializeField] private float _health = 3;
 
+    [SerializeField] private float _chaseSpeed = 8;
+
     [SerializeField] private List<Transform> _points;
     [SerializeField] private float _timeBetweenPatrolPoint;
     //private byte point = 0;
@@ -33,7 +35,7 @@ public class PatrolAI : MonoBehaviour
 
     private static List<PatrolAI> _enemies = new List<PatrolAI>();
 
-
+  
     private int _lastPointIndex = -1;
 
 
@@ -57,43 +59,47 @@ public class PatrolAI : MonoBehaviour
             _anim.SetBool("Patrol", false);
         else if (_state == EnemyState.Patroling)
             _anim.SetBool("Patrol", true);
-  
-        
+        else if(_state == EnemyState.FollowingPlayer)
+            _anim.SetBool("Patrol", true);
+
+
         if (_vision.DetectPlayer())
-        {
-            _playerPosition = _player.position;
-            ChaseMode();
-        }
-        else
-        {
-            if (_points.Count > 0 && _points != null)
             {
-                _playerPosition = Vector3.zero;
-
-                if (!(_agent.hasPath || _agent.pathPending) && _agent.velocity.sqrMagnitude < 0.1f)
+                _playerPosition = _player.position;
+                ChaseMode();
+            }
+            else
+            {
+                if (_points.Count > 0 && _points != null)
                 {
-                    //_anim.SetTrigger("PatrolToStop");
-                    if (_state == EnemyState.Idle && !_runCourotineOnce)
-                    {
-                        int randomIndex = Random.Range(0, _points.Count);
+                    _playerPosition = Vector3.zero;
 
-                        // Evita repetir o mesmo ponto duas vezes seguidas
-                        while (_points.Count > 1 && randomIndex == _lastPointIndex)
+                    if (!(_agent.hasPath || _agent.pathPending) && _agent.velocity.sqrMagnitude < 0.1f)
+                    {
+                        //_anim.SetTrigger("PatrolToStop");
+                        if (_state == EnemyState.Idle && !_runCourotineOnce)
                         {
-                            randomIndex = Random.Range(0, _points.Count);
+                            int randomIndex = Random.Range(0, _points.Count);
+
+                            // Evita repetir o mesmo ponto duas vezes seguidas
+                            while (_points.Count > 1 && randomIndex == _lastPointIndex)
+                            {
+                                randomIndex = Random.Range(0, _points.Count);
+                            }
+
+                            _lastPointIndex = randomIndex;
+                            _agent.SetDestination(_points[randomIndex].position);
+                            _state = EnemyState.Patroling;
+                            return;
+
                         }
 
-                        _lastPointIndex = randomIndex;
-                        _agent.SetDestination(_points[randomIndex].position);
-                        _state = EnemyState.Patroling;
-                        return;
-                    }
+                        if (!_runCourotineOnce)
+                            StartCoroutine(LeaveTheIdle(_timeBetweenPatrolPoint));
 
-                    if (!_runCourotineOnce)
-                        StartCoroutine(LeaveTheIdle(_timeBetweenPatrolPoint));
+                    }
                 }
             }
-        }
     }
 
     IEnumerator LeaveTheIdle(float timeToWait)
@@ -138,6 +144,7 @@ public class PatrolAI : MonoBehaviour
         else
         {
             _health = _health - damage;
+            _playerPosition = _player.position;
             ChaseMode();
         }
 
@@ -151,8 +158,6 @@ public class PatrolAI : MonoBehaviour
             print(collision.gameObject.layer);
             if (gameObject.layer == LayerMask.NameToLayer("Enemy") && collision.bounds.Intersects(GetComponent<Collider>().bounds))
             {
-                Debug.Log(gameObject.name + " collided with Player — restarting scene.");
-                Debug.Log("This object is on the 'Enemy' layer");
                 Scene _currentScene = SceneManager.GetActiveScene();
                 SceneManager.LoadScene(_currentScene.name);
             }
@@ -167,6 +172,8 @@ public class PatrolAI : MonoBehaviour
         _state = EnemyState.FollowingPlayer;
         _agent.SetDestination(_playerPosition);
 
+        _agent.speed = _chaseSpeed;
+
         
 
         if (!propagate) return;
@@ -179,16 +186,18 @@ public class PatrolAI : MonoBehaviour
                 enemy._state != EnemyState.FollowingPlayer)
             {
                 enemy.ChaseMode(false);
+                _anim.SetBool("Patrol", false);
             }
         }
     }
 
     public void InvestigatePosition(Vector3 position)
     {
-        if(_state == EnemyState.Dead || _state == EnemyState.FollowingPlayer) return;
+        if (_state == EnemyState.Dead || _state == EnemyState.FollowingPlayer) return;
 
         _state = EnemyState.FollowingPlayer;
         _agent.SetDestination(position);
+        _anim.SetBool("Patrol", true);
 
         
     }

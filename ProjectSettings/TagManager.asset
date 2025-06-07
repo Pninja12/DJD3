@@ -9,6 +9,8 @@ TagManager:
   - Enemy
   - TakeDown
   - Bullet
+  - HideSpot
+  - InterestArea
   layers:
   - Default
   - TransparentFX

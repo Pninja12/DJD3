@@ -4,14 +4,14 @@ public class PickUps : MonoBehaviour
 {
     [SerializeField] private int _ammoAmount = 3;
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        Gun gun = other.GetComponentInChildren<Gun>();
+
+        Gun gun = collision.gameObject.GetComponentInChildren<Gun>();
 
         if(gun != null)
         {
             gun.AddAmo(_ammoAmount);
-            Destroy(gameObject);
         }
     }
 }
