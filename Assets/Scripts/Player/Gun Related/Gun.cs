@@ -17,9 +17,7 @@ public class Gun : MonoBehaviour
     void Start()
     {
         _currentAmmo = _maxAmmo;
-        //Add pelo carvalho
-        TextBulletsUI.text = _currentAmmo.ToString();
-        //
+        UIAmmo();
     }
     // Update is called once per frame
     void Update()
@@ -30,15 +28,21 @@ public class Gun : MonoBehaviour
             bullet.GetComponent<Rigidbody>().linearVelocity = _bulletSpawn.forward * _bulletSpeed;
 
             _currentAmmo--;
-            //Add pelo carvalho
-            TextBulletsUI.text = _currentAmmo.ToString();
-            //
+            UIAmmo();
         }
     }
 
     public void AddAmo(int amount)
     {
         _currentAmmo += amount;
-        if(_currentAmmo > _maxAmmo) _currentAmmo = _maxAmmo;
+        if (_currentAmmo > _maxAmmo) _currentAmmo = _maxAmmo;
+        UIAmmo();
+    }
+    public void UIAmmo()
+    {
+        //Add pelo carvalho
+        TextBulletsUI.text = _currentAmmo.ToString();
+        //
+
     }
 }
