@@ -56,8 +56,10 @@ public class PlayerMovement : MonoBehaviour
         _cameraLock = false;
         _arrivedAtCamera = false;
 
+        
         HideCursor();
         //Add pelo carvalho
+        
         ChangeUILife();
         //
     }
@@ -69,8 +71,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        
         ChangeUILife();
-        //_life = (byte)(_life - 0.1);
+      
         if (!ui.GetPause())
         {
             CheckForJump();
@@ -102,8 +105,10 @@ public class PlayerMovement : MonoBehaviour
 
         if (_life == 0)
         {
-            Scene _currentScene = SceneManager.GetActiveScene();
-            SceneManager.LoadScene(_currentScene.name);
+            ui.GetComponent<UIManager>().DeadPanel();
+            
+            //Scene _currentScene = SceneManager.GetActiveScene();
+            //SceneManager.LoadScene(_currentScene.name);
         }
 
     }
@@ -449,6 +454,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if (_life == 0)
         {
+            
             hpBar.fillAmount = 0f;
         }
 

@@ -1,19 +1,27 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+// Codigo feito pelo carvalho neste script precisa de ser revisto por programadores.
 public class UIManager : MonoBehaviour
 {
+    [SerializeField] private GameObject _deadMenu;
     [SerializeField] private GameObject _pauseMenu;
     [SerializeField] private GameObject _crossHair;
     private Button _resumeButton;
 
     private bool _openPauseMenu;
+    //Add pelo carvalho
+    private bool _opendeadMenu;
+    //
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _openPauseMenu = false;
+         //Add pelo carvalho
+        _opendeadMenu = false;
+        //
         _crossHair.SetActive(false);
         _pauseMenu.SetActive(false);
+        _deadMenu.SetActive(false);
         Transform buttonTransform = transform.Find("Pause Menu/ResumeButton");
         _resumeButton = buttonTransform.GetComponent<Button>();
     }
@@ -51,6 +59,14 @@ public class UIManager : MonoBehaviour
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
         }
+        //ADD pelo carvalho
+        if (_opendeadMenu==true)
+        {
+            Time.timeScale = 0f;
+            Cursor.lockState = CursorLockMode.Confined;
+            
+        }
+        //
 
 
     }
@@ -64,4 +80,11 @@ public class UIManager : MonoBehaviour
     {
         _openPauseMenu = false;
     }
+    //Add pelo carvalho
+    public void DeadPanel()
+    {
+        _deadMenu.SetActive(true);
+        _opendeadMenu = true;
+    }
+    //
 }
