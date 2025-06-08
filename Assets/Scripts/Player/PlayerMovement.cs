@@ -1,9 +1,11 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.Text;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Player Settings")]
     [SerializeField] private float _gravityAcceleration;
     [SerializeField] private float _maxFallSpeed;
     [SerializeField] private float _maxForwardSpeed;
@@ -11,15 +13,22 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _maxBackwardSpeed;
     [SerializeField] private float _maxStrafeSpeed;
     [SerializeField] private float _jumpSpeed;
-    [SerializeField] private Transform _camera;
-    [SerializeField] private CameraControl _scriptCamera;
     [SerializeField] private float _rotationalSpeed = 2;
     [SerializeField] private float _crouchHeight;
     [SerializeField] private float _defaultHeight;
     [SerializeField] private KeyCode _crouchKey = KeyCode.LeftControl;
     [SerializeField] private KeyCode _sprintKey = KeyCode.LeftShift;
+
+    [Header("Camera Settings")]
+    [SerializeField] private Transform _camera;
+    [SerializeField] private CameraControl _scriptCamera;
+
+    [Header("UI/Life Settings")]
     [SerializeField] private UIManager ui;
     [SerializeField] private Gun _gun;
+    [SerializeField] private byte _ammoToReceive = 3;
+    [SerializeField] private byte _life = 3;
+    [SerializeField] private float damageCooldown = 5.0f;
 
     private CharacterController _controller;
     private Vector3 _velocityHor;
@@ -31,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
     private float _rotateTo = 0;
     private float _rotateWhereWeAre;
     private bool _isCrouching = false;
+    private float lastDamage = -Mathf.Infinity;
 
 
     void Start()
@@ -79,7 +89,15 @@ public class PlayerMovement : MonoBehaviour
                 _maxForwardSpeed -= _sprintSpeed;
             }
         }
-            
+
+        Cheats();
+
+        if(_life == 0)
+        {
+            Scene _currentScene = SceneManager.GetActiveScene();
+            SceneManager.LoadScene(_currentScene.name);
+        }
+
     }
 
     private void UpdateRotation()
@@ -386,9 +404,22 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        if(collided.gameObject.layer == LayerMask.NameToLayer("Enemy") && _life > 0 && Time.time - lastDamage >= damageCooldown)
+        {
+            _life--;
+            lastDamage = Time.time;
+        }
+
         if (collided.gameObject.layer == LayerMask.NameToLayer("Loot") && Input.GetKeyDown(KeyCode.F))
         {
-            _gun.AddAmo(Random.Range(1, 4));
+            print("Received ammo!");
+            _gun.AddAmo(_ammoToReceive);
         }
+    }
+
+    void Cheats ()
+    {
+        if(Input.GetKeyDown(KeyCode.B))
+            _gun.AddAmo(20);
     }
 }

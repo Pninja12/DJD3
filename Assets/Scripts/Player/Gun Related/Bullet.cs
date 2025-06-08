@@ -38,6 +38,10 @@ public class Bullet : MonoBehaviour
                 enemy.Death();
                 Destroy(gameObject);
                 break;
+            default:
+                // If the bullet hits something else, just destroy it
+                Destroy(gameObject);
+                break;
         }
     }
 

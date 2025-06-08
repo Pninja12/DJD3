@@ -150,7 +150,7 @@ public class PatrolAI : MonoBehaviour
 
     }
 
-    void OnTriggerEnter(Collider collision)
+    /*void OnTriggerEnter(Collider collision)
     {
         
         if (collision.gameObject.tag == "Player")
@@ -163,7 +163,8 @@ public class PatrolAI : MonoBehaviour
             }
 
         }
-    }
+    }*/
+
 
     public void ChaseMode(bool propagate = true)
     {

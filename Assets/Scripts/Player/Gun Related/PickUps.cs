@@ -11,6 +11,7 @@ public class PickUps : MonoBehaviour
 
         if(gun != null)
         {
+            Debug.Log("Picked up ammo!");
             gun.AddAmo(_ammoAmount);
         }
     }

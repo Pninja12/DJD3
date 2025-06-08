@@ -809,7 +809,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 70d14ed8b2019784387d9c3fed4be644, type: 3}
       propertyPath: m_Layer
-      value: 9
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -925,8 +925,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 37c25347393fb4c438f425e60a9d313f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5379337449064091652}
   m_SourcePrefab: {fileID: 100100000, guid: 37c25347393fb4c438f425e60a9d313f, type: 3}
+--- !u!1 &1543368325125155225 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 37c25347393fb4c438f425e60a9d313f, type: 3}
+  m_PrefabInstance: {fileID: 1849374715746030792}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &5379337449064091652
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543368325125155225}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.021972185, y: 0.10799529, z: 0.021972207}
+  m_Center: {x: -0.0000000047522466, y: -0.021052424, z: 0.0000038079195}
 --- !u!4 &2171005483377029923 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 37c25347393fb4c438f425e60a9d313f, type: 3}
@@ -2044,12 +2073,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.015292035, y: 0.03784169, z: 0.013866719}
-  m_Center: {x: -0.00015416382, y: 0.020383606, z: -0.0009193441}
+  m_Size: {x: 0.015292035, y: 0.03784169, z: 0.013370957}
+  m_Center: {x: -0.00015416382, y: 0.020383606, z: -0.0011672248}
 --- !u!114 &3267992577861102333
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2066,6 +2095,7 @@ MonoBehaviour:
   _vision: {fileID: 8598257211775012493}
   _range: 5
   _health: 3
+  _chaseSpeed: 8
   _points: []
   _timeBetweenPatrolPoint: 3
   _anim: {fileID: 8654991618477465366}
