@@ -7,16 +7,17 @@ public class InterestAreaSpawner : MonoBehaviour
     public int maxSpawnPerArea = 3;
     public float minDistanceBetweenObjects = 2f;
     public int maxAttemptsPerObject = 10;
+    public float heightOffset = -0.1f; 
 
     private List<Collider> interestAreas = new List<Collider>();
 
     void Start()
     {
         GameObject[] areas = GameObject.FindGameObjectsWithTag("InterestArea");
-        foreach(var area in areas)
+        foreach (var area in areas)
         {
             Collider col = area.GetComponent<Collider>();
-            if (col != null && col.isTrigger)
+            if (col != null)
                 interestAreas.Add(col);
         }
 
@@ -33,7 +34,11 @@ public class InterestAreaSpawner : MonoBehaviour
 
         while (spawned < maxSpawn && attempts < maxSpawn * maxAttemptsPerObject)
         {
-            Vector3 randomPos = GetRandomPointInCollider(areaCollider);
+            if (!TryGetValidSpawnPoint(areaCollider, out Vector3 randomPos))
+            {
+                attempts++;
+                continue;
+            }
 
             bool canSpawn = !Physics.CheckSphere(randomPos, minDistanceBetweenObjects);
 
@@ -47,20 +52,22 @@ public class InterestAreaSpawner : MonoBehaviour
         }
     }
 
-    Vector3 GetRandomPointInCollider(Collider col)
+    bool TryGetValidSpawnPoint(Collider col, out Vector3 validPoint)
     {
         Vector3 point = new Vector3(
             Random.Range(col.bounds.min.x, col.bounds.max.x),
-            col.bounds.center.y,
+            col.bounds.max.y + 5f,
             Random.Range(col.bounds.min.z, col.bounds.max.z)
         );
 
-        Ray ray = new Ray(new Vector3(point.x, 100f, point.z), Vector3.down);
-        if (Physics.Raycast(ray, out RaycastHit hit, 200f))
+        Ray ray = new Ray(point, Vector3.down);
+        if (Physics.Raycast(ray, out RaycastHit hit, 20f))
         {
-            point.y = hit.point.y;
+            validPoint = hit.point + Vector3.up * heightOffset;
+            return true;
         }
 
-        return point;
+        validPoint = Vector3.zero;
+        return false;
     }
 }
