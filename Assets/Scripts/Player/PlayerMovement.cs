@@ -2,6 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.Text;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -42,7 +43,9 @@ public class PlayerMovement : MonoBehaviour
     private bool _isCrouching = false;
     private float lastDamage = -Mathf.Infinity;
 
-
+    //Add pelo carvalho
+    public Image hpBar;
+    //
     void Start()
     {
         _controller = GetComponent<CharacterController>();
@@ -54,6 +57,9 @@ public class PlayerMovement : MonoBehaviour
         _arrivedAtCamera = false;
 
         HideCursor();
+        //Add pelo carvalho
+        ChangeUILife();
+        //
     }
 
     private void HideCursor()
@@ -63,6 +69,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        ChangeUILife();
+        //_life = (byte)(_life - 0.1);
         if (!ui.GetPause())
         {
             CheckForJump();
@@ -92,7 +100,7 @@ public class PlayerMovement : MonoBehaviour
 
         Cheats();
 
-        if(_life == 0)
+        if (_life == 0)
         {
             Scene _currentScene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(_currentScene.name);
@@ -297,6 +305,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump") && _controller.isGrounded)
             _jump = true;
+
     }
 
     private void StartCrouch()
@@ -404,10 +413,11 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        if(collided.gameObject.layer == LayerMask.NameToLayer("Enemy") && _life > 0 && Time.time - lastDamage >= damageCooldown)
+        if (collided.gameObject.layer == LayerMask.NameToLayer("Enemy") && _life > 0 && Time.time - lastDamage >= damageCooldown)
         {
             _life--;
             lastDamage = Time.time;
+            
         }
 
         if (collided.gameObject.layer == LayerMask.NameToLayer("Loot") && Input.GetKeyDown(KeyCode.F))
@@ -417,9 +427,31 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void Cheats ()
+    void Cheats()
     {
-        if(Input.GetKeyDown(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.B))
             _gun.AddAmo(20);
     }
+    //Add pelo carvalho
+    public void ChangeUILife()
+    {
+        if (_life == 3)
+        {
+            hpBar.fillAmount = 1f;
+        }
+        if (_life == 2)
+        {
+            hpBar.fillAmount = 0.66f;
+        }
+        if (_life == 1)
+        {
+            hpBar.fillAmount = 0.33f;
+        }
+        if (_life == 0)
+        {
+            hpBar.fillAmount = 0f;
+        }
+
+    }
+    //
 }
