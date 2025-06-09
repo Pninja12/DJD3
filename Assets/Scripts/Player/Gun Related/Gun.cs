@@ -14,22 +14,37 @@ public class Gun : MonoBehaviour
     private int _currentAmmo;
     [SerializeField] private UIManager ui;
 
+    //Add pelo carvalho
+    [Header("Animation Settings")]
+    [SerializeField] private AnimationsPlay anim;
+    //
     void Start()
     {
+        
+        //Add pelo carvalho
+        
+        //
         _currentAmmo = _maxAmmo;
         UIAmmo();
     }
     // Update is called once per frame
     void Update()
     {
+
         if ((Input.GetMouseButtonDown(0) && _currentAmmo > 0) && !ui.GetPause())
         {
+
             var bullet = Instantiate(_bulletPrefab, _bulletSpawn.position, _bulletSpawn.rotation);
             bullet.GetComponent<Rigidbody>().linearVelocity = _bulletSpawn.forward * _bulletSpeed;
-
+            anim.Shoot();
             _currentAmmo--;
             UIAmmo();
         }
+        else
+        {
+            anim.StopShoot();
+        }
+        
     }
 
     public void AddAmo(int amount)
@@ -38,11 +53,13 @@ public class Gun : MonoBehaviour
         if (_currentAmmo > _maxAmmo) _currentAmmo = _maxAmmo;
         UIAmmo();
     }
+    //Add pelo carvalho
     public void UIAmmo()
     {
-        //Add pelo carvalho
+
         TextBulletsUI.text = _currentAmmo.ToString();
-        //
+
 
     }
+    //
 }

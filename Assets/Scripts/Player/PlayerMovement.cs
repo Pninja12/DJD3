@@ -31,6 +31,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private byte _life = 3;
     [SerializeField] private float damageCooldown = 5.0f;
 
+    [Header("Animation Settings")]
+    [SerializeField] private AnimationsPlay anim;
+    
+
     private CharacterController _controller;
     private Vector3 _velocityHor;
     private Vector3 _velocityVer;
@@ -55,10 +59,10 @@ public class PlayerMovement : MonoBehaviour
         _jump = false;
         _cameraLock = false;
         _arrivedAtCamera = false;
-
         
         HideCursor();
         //Add pelo carvalho
+        anim = gameObject.GetComponent<AnimationsPlay>();
         
         ChangeUILife();
         //
@@ -93,11 +97,18 @@ public class PlayerMovement : MonoBehaviour
             {
                 // change velocity
                 _maxForwardSpeed += _sprintSpeed;
+
+                //Add pelo carvalho    
+                anim.Run();
+                //
             }
             else if (Input.GetKeyUp(_sprintKey))
             {
                 // change velocity
                 _maxForwardSpeed -= _sprintSpeed;
+                //Add pelo carvalho    
+                anim.StopRun();
+                //
             }
         }
 
@@ -106,7 +117,7 @@ public class PlayerMovement : MonoBehaviour
         if (_life == 0)
         {
             ui.GetComponent<UIManager>().DeadPanel();
-            
+            anim.Dead();
             //Scene _currentScene = SceneManager.GetActiveScene();
             //SceneManager.LoadScene(_currentScene.name);
         }
@@ -309,8 +320,16 @@ public class PlayerMovement : MonoBehaviour
     private void CheckForJump()
     {
         if (Input.GetButtonDown("Jump") && _controller.isGrounded)
+        {
             _jump = true;
-
+            anim.Jump();
+        } 
+        //Add pelo carvalho
+        else
+        {
+            anim.StopJump();
+        }    
+        //
     }
 
     private void StartCrouch()
@@ -319,6 +338,10 @@ public class PlayerMovement : MonoBehaviour
         {
             _controller.height = _crouchHeight;
             _isCrouching = true;
+            //Add pelo carvalho
+            anim.Crouch();
+            //
+            
         }
     }
 
@@ -328,6 +351,10 @@ public class PlayerMovement : MonoBehaviour
         {
             _controller.height = _defaultHeight;
             _isCrouching = false;
+            //Add pelo carvalho
+            anim.StopCrouch();
+            //
+           
         }
     }
 
@@ -349,20 +376,42 @@ public class PlayerMovement : MonoBehaviour
 
         if (forwardAxis > 0f)
         {
+            //Add pelo carvalho
+            anim.Walk();
+            //
             _velocityHor.z = forwardAxis * _maxForwardSpeed;
 
             if (_velocityHor.magnitude > _maxForwardSpeed)
                 _velocityHor = _velocityHor.normalized * _maxForwardSpeed;
+
         }
         else if (forwardAxis < 0f)
         {
+            //Add pelo carvalho
+            anim.Walk();
+            //
             _velocityHor.z = forwardAxis * _maxBackwardSpeed;
 
             if (_velocityHor.magnitude > _maxBackwardSpeed)
                 _velocityHor = _velocityHor.normalized * _maxBackwardSpeed;
+
         }
+        //Add pelo Carvalho
+        else if (_velocityHor.magnitude == 0)
+        {
+            anim.StopWalk();
+        }
+        //
+
         else
+        {
             _velocityHor.z = 0f;
+            //Add pelo carvalho
+            anim.StopWalk();
+            // 
+        }
+            
+            
     }
 
     private void UpdateVelocityVer()
@@ -429,6 +478,9 @@ public class PlayerMovement : MonoBehaviour
         {
             print("Received ammo!");
             _gun.AddAmo(_ammoToReceive);
+            //Add pelo Carvalho
+            anim.Heal();
+            //
         }
     }
 
@@ -436,6 +488,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.B))
             _gun.AddAmo(20);
+            
     }
     //Add pelo carvalho
     public void ChangeUILife()
@@ -454,8 +507,8 @@ public class PlayerMovement : MonoBehaviour
         }
         if (_life == 0)
         {
-            
             hpBar.fillAmount = 0f;
+            anim.Dead();
         }
 
     }

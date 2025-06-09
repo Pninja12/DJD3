@@ -21,6 +21,13 @@ public class MenuScript : MonoBehaviour
 
 
     }
+    public void PreviousScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+
+
+
+    }
     public void Options()
     {
 

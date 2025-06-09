@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 // Codigo feito pelo carvalho neste script precisa de ser revisto por programadores.
 public class UIManager : MonoBehaviour
 {
@@ -16,8 +17,9 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         _openPauseMenu = false;
-         //Add pelo carvalho
+        //Add pelo carvalho
         _opendeadMenu = false;
+        
         //
         _crossHair.SetActive(false);
         _pauseMenu.SetActive(false);
@@ -60,11 +62,10 @@ public class UIManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
         }
         //ADD pelo carvalho
-        if (_opendeadMenu==true)
+        if (_opendeadMenu == true)
         {
             Time.timeScale = 0f;
             Cursor.lockState = CursorLockMode.Confined;
-            
         }
         //
 
@@ -83,8 +84,16 @@ public class UIManager : MonoBehaviour
     //Add pelo carvalho
     public void DeadPanel()
     {
+        StartCoroutine(WaitForDeadPanel());
+    }
+    
+    private IEnumerator WaitForDeadPanel()
+    {
+        // espera Xs
+        yield return new WaitForSeconds(3f);
         _deadMenu.SetActive(true);
         _opendeadMenu = true;
+
     }
     //
 }
