@@ -37,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
 
     private CharacterController _controller;
     private Vector3 _velocityHor;
+    private Vector3 _originalCenter;
     private Vector3 _velocityVer;
     private Vector3 _motion;
     private bool _jump;
@@ -66,6 +67,9 @@ public class PlayerMovement : MonoBehaviour
         
         ChangeUILife();
         //
+
+        _defaultHeight = _controller.height;
+        _originalCenter = _controller.center;
     }
 
     private void HideCursor()
@@ -337,6 +341,10 @@ public class PlayerMovement : MonoBehaviour
         if (!_isCrouching)
         {
             _controller.height = _crouchHeight;
+
+            float _centerOffset = (_defaultHeight - _crouchHeight) / 2f;
+            _controller.center = new Vector3(0, _originalCenter.y - _centerOffset, 0);
+
             _isCrouching = true;
             //Add pelo carvalho
             anim.Crouch();
@@ -350,6 +358,9 @@ public class PlayerMovement : MonoBehaviour
         if (_isCrouching)
         {
             _controller.height = _defaultHeight;
+            _controller.center = _originalCenter;
+
+
             _isCrouching = false;
             //Add pelo carvalho
             anim.StopCrouch();

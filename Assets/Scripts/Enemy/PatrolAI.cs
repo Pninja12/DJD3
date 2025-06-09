@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public enum EnemyState
 {
     Idle,
-    Patroling,
+    Patrolling,
     FollowingPlayer,
     Dead,
     TakeDamage
@@ -57,7 +57,7 @@ public class PatrolAI : MonoBehaviour
 
         if (_state == EnemyState.Idle)
             _anim.SetBool("Patrol", false);
-        else if (_state == EnemyState.Patroling)
+        else if (_state == EnemyState.Patrolling)
             _anim.SetBool("Patrol", true);
         else if(_state == EnemyState.FollowingPlayer)
             _anim.SetBool("Patrol", true);
@@ -89,7 +89,7 @@ public class PatrolAI : MonoBehaviour
 
                             _lastPointIndex = randomIndex;
                             _agent.SetDestination(_points[randomIndex].position);
-                            _state = EnemyState.Patroling;
+                            _state = EnemyState.Patrolling;
                             return;
 
                         }
@@ -137,16 +137,42 @@ public class PatrolAI : MonoBehaviour
     {
         if (damage >= _health)
         {
+            _anim.SetBool("Death", true);
+            _anim.SetBool("Patrol", false);
             _state = EnemyState.Dead;
-            Destroy(gameObject);
-            _enemies.Remove(this);
+
+            _agent.ResetPath();
+            _agent.isStopped = true;
+            _agent.enabled = false;
+            StartCoroutine(DeathSequence());
         }
         else
         {
             _health = _health - damage;
-            _playerPosition = _player.position;
-            ChaseMode();
+            StartCoroutine(WaitForReset());
         }
+
+    }
+
+    private IEnumerator DeathSequence()
+    {
+        _enemies.Remove(this);
+
+        yield return new WaitForSeconds(5f);
+
+        Destroy(gameObject);
+    }
+
+    private IEnumerator WaitForReset()
+    {
+        _state = EnemyState.TakeDamage;
+        _anim.SetBool("HitFront", true);
+        _anim.SetBool("Patrol", false);
+        yield return new WaitForSeconds(1f);
+        _anim.SetBool("HitFront", false);
+        _anim.SetBool("FoundPlayer", true);
+        _playerPosition = _player.position;
+        ChaseMode();
 
     }
 
