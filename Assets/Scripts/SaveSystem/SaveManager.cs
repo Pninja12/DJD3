@@ -10,12 +10,24 @@ public class SaveManager : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
-    }
+        if (FindObjectsOfType<SaveManager>().Length > 1)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
+        DontDestroyOnLoad(gameObject); 
+    }
 
     private void Start()
     {
+        RegisterAllSaveables();
+    }
+
+    private void RegisterAllSaveables()
+    {
+        saveables.Clear(); 
+
         SaveablePlayer player = FindObjectOfType<SaveablePlayer>();
         if (player != null) RegisterSaveable("Player", player);
 
@@ -39,15 +51,19 @@ public class SaveManager : MonoBehaviour
     public void SaveGame()
     {
         Dictionary<string, object> saveData = new Dictionary<string, object>();
+
         foreach (var entry in saveables)
         {
-            saveData.Add(entry.Key, entry.Value.GetSaveData());
+            if (entry.Value != null) 
+            {
+                saveData.Add(entry.Key, entry.Value.GetSaveData());
+            }
         }
 
         string json = JsonConvert.SerializeObject(saveData);
         File.WriteAllText(Application.persistentDataPath + "/savegame.json", json);
 
-        Debug.Log("Game Saved!");
+        Debug.Log("Jogo salvo!");
     }
 
     public void LoadGame()
@@ -63,15 +79,18 @@ public class SaveManager : MonoBehaviour
                 if (saveables.ContainsKey(entry.Key))
                 {
                     saveables[entry.Key].LoadSaveData(entry.Value);
+                    ((MonoBehaviour)saveables[entry.Key]).gameObject.SetActive(true);
                 }
             }
 
-            Debug.Log("Game Loaded!");
+            Debug.Log("Jogo carregado!");
         }
         else
         {
-            Debug.LogWarning("No Save Found!");
+            Debug.LogWarning("Nenhum save encontrado!");
         }
+
+        Time.timeScale = 1; 
     }
 
     public void SaveGameButton()
@@ -81,12 +100,22 @@ public class SaveManager : MonoBehaviour
 
     public void LoadGameButton()
     {
-        LoadGame();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("Game"); 
     }
 
-    private Dictionary<string, object> LoadFromFileOrPlayerPrefs()
+    private void OnEnable()
     {
-        return new Dictionary<string, object>(); 
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        RegisterAllSaveables();
+        LoadGame(); 
     }
 }
