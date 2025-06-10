@@ -54,19 +54,26 @@ public class PatrolAI : MonoBehaviour
 
     void Update()
     {
+        if (_state != EnemyState.Dead)
+        {
+            _anim.SetBool("Patrol", _state == EnemyState.Patrolling);
 
-        if (_state == EnemyState.Idle)
-            _anim.SetBool("Patrol", false);
-        else if (_state == EnemyState.Patrolling)
-            _anim.SetBool("Patrol", true);
-        else if(_state == EnemyState.FollowingPlayer)
-            _anim.SetBool("Patrol", true);
+            _anim.SetBool("FoundPlayer", _state == EnemyState.FollowingPlayer);
+
+            _anim.SetBool("GoIdle", _state == EnemyState.Idle);
 
 
-        if (_vision.DetectPlayer())
+            
+            if (_vision.DetectPlayer())
             {
                 _playerPosition = _player.position;
                 ChaseMode();
+                print(Vector3.Distance(transform.position, _playerPosition));
+            }
+            else if (Vector3.Distance(transform.position, _playerPosition) < 3)
+            {
+                _playerPosition = _player.position;
+                AttackMode();
             }
             else
             {
@@ -99,7 +106,10 @@ public class PatrolAI : MonoBehaviour
 
                     }
                 }
-            }
+                else
+                    _state = EnemyState.Idle;
+            } 
+        }
     }
 
     IEnumerator LeaveTheIdle(float timeToWait)
@@ -135,20 +145,20 @@ public class PatrolAI : MonoBehaviour
 
     public void Death(int damage = 1)
     {
-        if (damage >= _health)
+        if (damage >= _health && _state != EnemyState.Dead)
         {
-            _anim.SetBool("Death", true);
-            _anim.SetBool("Patrol", false);
             _state = EnemyState.Dead;
 
             _agent.ResetPath();
             _agent.isStopped = true;
             _agent.enabled = false;
+            _anim.SetTrigger("Death");
             StartCoroutine(DeathSequence());
         }
-        else
+        else if(_state != EnemyState.Dead)
         {
             _health = _health - damage;
+            _anim.SetTrigger("HitFront");
             StartCoroutine(WaitForReset());
         }
 
@@ -166,11 +176,9 @@ public class PatrolAI : MonoBehaviour
     private IEnumerator WaitForReset()
     {
         _state = EnemyState.TakeDamage;
-        _anim.SetBool("HitFront", true);
-        _anim.SetBool("Patrol", false);
+
         yield return new WaitForSeconds(1f);
-        _anim.SetBool("HitFront", false);
-        _anim.SetBool("FoundPlayer", true);
+
         _playerPosition = _player.position;
         ChaseMode();
 
@@ -213,9 +221,17 @@ public class PatrolAI : MonoBehaviour
                 enemy._state != EnemyState.FollowingPlayer)
             {
                 enemy.ChaseMode(false);
-                _anim.SetBool("Patrol", false);
             }
         }
+    }
+
+    private void AttackMode()
+    {
+        _state = EnemyState.FollowingPlayer;
+        _agent.SetDestination(_playerPosition);
+
+        _agent.speed = _chaseSpeed;
+        _anim.SetTrigger("Attack" + Random.Range(1,3));
     }
 
     public void InvestigatePosition(Vector3 position)

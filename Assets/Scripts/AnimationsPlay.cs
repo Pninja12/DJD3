@@ -8,11 +8,11 @@ public class AnimationsPlay : MonoBehaviour
 
     public void Walk()
     {
-        animator.SetTrigger("Walk");
+        animator.SetBool("Walk", true);
     }
     public void StopWalk()
     {
-        animator.ResetTrigger("Walk");
+        animator.SetBool("Walk", false);
     }
     public void Run()
     {

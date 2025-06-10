@@ -126,8 +126,8 @@ public class CameraControl : MonoBehaviour
     private void UpdateZoom()
     {
         UpdateZoomVelocity();
-        if(!Input.GetButton("Camera"))
-            UpdateZoomPosition();
+        /*if(!Input.GetButton("Camera"))
+            UpdateZoomPosition();*/
     }
 
     private void UpdateZoomVelocity()
@@ -172,14 +172,21 @@ public class CameraControl : MonoBehaviour
 
         if (Physics.Linecast(_deocclusionPivot.position, _deocclusionPoint, out RaycastHit hitInfo, _deocclusionLayerMask.value))
         {
-            if (hitInfo.collider.CompareTag("WorldBoundary"))
-                _cameraTransform.position = hitInfo.point + _cameraTransform.TransformDirection(_deocclusionVector);
+            if (Physics.Linecast(_deocclusionPivot.position, transform.position - _cameraTransform.TransformDirection(_deocclusionVector), out _, _deocclusionLayerMask.value))
+            {
+                if (hitInfo.collider.CompareTag("WorldBoundary"))
+                    _cameraTransform.position = hitInfo.point + _cameraTransform.TransformDirection(_deocclusionVector);
+                else
+                {
+                    _position = _cameraTransform.localPosition;
+                    _position.z += _deocclusionSpeed * Time.deltaTime;
+
+                    _cameraTransform.localPosition = _position;
+                }
+            }
             else
             {
-                _position = _cameraTransform.localPosition;
-                _position.z += _deocclusionSpeed * Time.deltaTime;
-
-                _cameraTransform.localPosition = _position;
+                RevertDeocclusion();
             }
         }
         else

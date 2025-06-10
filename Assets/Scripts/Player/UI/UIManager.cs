@@ -40,7 +40,7 @@ public class UIManager : MonoBehaviour
             _crossHair.SetActive(false);
 
 
-        if (Input.GetButtonDown("Cancel"))
+        if (Input.GetButtonDown("Cancel") && !_deadMenu.activeSelf)
         {
             _openPauseMenu = !_openPauseMenu;
         }
@@ -62,7 +62,7 @@ public class UIManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
         }
         //ADD pelo carvalho
-        if (_opendeadMenu == true)
+        if (_opendeadMenu)
         {
             Time.timeScale = 0f;
             Cursor.lockState = CursorLockMode.Confined;
@@ -74,7 +74,7 @@ public class UIManager : MonoBehaviour
 
     public bool GetPause()
     {
-        return _openPauseMenu;
+        return (_openPauseMenu || _deadMenu.activeSelf);
     }
 
     void TurnOff()

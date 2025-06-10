@@ -3,16 +3,20 @@ using UnityEngine;
 
 public class InterestAreaSpawner : MonoBehaviour
 {
-    public GameObject hideSpotPrefab;
-    public int maxSpawnPerArea = 3;
-    public float minDistanceBetweenObjects = 2f;
-    public int maxAttemptsPerObject = 10;
-    public float heightOffset = -0.1f; 
+    [SerializeField] private GameObject hideSpotPrefab;
+    [SerializeField] private int maxSpawnPerArea = 2;
+    [SerializeField] private float minDistanceBetweenObjects = 10f;
+    [SerializeField] private int maxAttemptsPerObject = 10;
+    [SerializeField] private float heightOffset = -0.1f;
+    [SerializeField] private int seed = MenuScript.score;  // << Add a seed you can change
+
 
     private List<Collider> interestAreas = new List<Collider>();
 
     void Start()
     {
+        Random.InitState(seed);  // << Use the seed to make randomness deterministic
+
         GameObject[] areas = GameObject.FindGameObjectsWithTag("InterestArea");
         foreach (var area in areas)
         {
@@ -44,7 +48,7 @@ public class InterestAreaSpawner : MonoBehaviour
 
             if (canSpawn)
             {
-                Instantiate(hideSpotPrefab, randomPos, Quaternion.identity);
+                Instantiate(hideSpotPrefab, randomPos - new Vector3(0,0.5f,0), Quaternion.identity);
                 spawned++;
             }
 

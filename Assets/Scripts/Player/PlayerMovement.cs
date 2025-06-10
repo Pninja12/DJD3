@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _defaultHeight;
     [SerializeField] private KeyCode _crouchKey = KeyCode.LeftControl;
     [SerializeField] private KeyCode _sprintKey = KeyCode.LeftShift;
+    [SerializeField] private CharacterController _characterController;
 
     [Header("Camera Settings")]
     [SerializeField] private Transform _camera;
@@ -32,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float damageCooldown = 5.0f;
 
     [Header("Animation Settings")]
-    [SerializeField] private AnimationsPlay anim;
+    [SerializeField] private AnimationsPlay _anim;
     
 
     private CharacterController _controller;
@@ -63,7 +64,7 @@ public class PlayerMovement : MonoBehaviour
         
         HideCursor();
         //Add pelo carvalho
-        anim = gameObject.GetComponent<AnimationsPlay>();
+        _anim = gameObject.GetComponent<AnimationsPlay>();
         
         ChangeUILife();
         //
@@ -79,52 +80,57 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        
-        ChangeUILife();
-      
-        if (!ui.GetPause())
-        {
-            CheckForJump();
-            UpdateRotation();
-
-            if (Input.GetKeyDown(_crouchKey))
-            {
-                // Start crouching
-                StartCrouch();
-            }
-            else if (Input.GetKeyUp(_crouchKey))
-            {
-                // Stop crouching
-                StopCrouch();
-            }
-            if (Input.GetKeyDown(_sprintKey))
-            {
-                // change velocity
-                _maxForwardSpeed += _sprintSpeed;
-
-                //Add pelo carvalho    
-                anim.Run();
-                //
-            }
-            else if (Input.GetKeyUp(_sprintKey))
-            {
-                // change velocity
-                _maxForwardSpeed -= _sprintSpeed;
-                //Add pelo carvalho    
-                anim.StopRun();
-                //
-            }
-        }
-
-        Cheats();
-
         if (_life == 0)
         {
+            //_characterController.enabled = false;
             ui.GetComponent<UIManager>().DeadPanel();
-            anim.Dead();
+            _anim.Dead();
             //Scene _currentScene = SceneManager.GetActiveScene();
             //SceneManager.LoadScene(_currentScene.name);
         }
+        else
+        {
+            ChangeUILife();
+      
+            if (!ui.GetPause())
+            {
+                CheckForJump();
+                UpdateRotation();
+
+                if (Input.GetKeyDown(_crouchKey) && !Input.GetKeyDown(_sprintKey))
+                {
+                    // Start crouching
+                    StartCrouch();
+                }
+                else if (Input.GetKeyUp(_crouchKey))
+                {
+                    // Stop crouching
+                    StopCrouch();
+                }
+                if (Input.GetKeyDown(_sprintKey) && !Input.GetKeyDown(_crouchKey))
+                {
+                    // change velocity
+                    _maxForwardSpeed += _sprintSpeed;
+
+                    //Add pelo carvalho    
+                    _anim.Run();
+                    //
+                }
+                else if (Input.GetKeyUp(_sprintKey))
+                {
+                    // change velocity
+                    _maxForwardSpeed -= _sprintSpeed;
+                    //Add pelo carvalho    
+                    _anim.StopRun();
+                    //
+                }
+            }
+
+            Cheats();
+        }
+
+
+        
 
     }
 
@@ -326,12 +332,12 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && _controller.isGrounded)
         {
             _jump = true;
-            anim.Jump();
+            _anim.Jump();
         } 
         //Add pelo carvalho
         else
         {
-            anim.StopJump();
+            _anim.StopJump();
         }    
         //
     }
@@ -340,14 +346,19 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!_isCrouching)
         {
-            _controller.height = _crouchHeight;
+            /*
+		_controller.height = _crouchHeight;
 
-            float _centerOffset = (_defaultHeight - _crouchHeight) / 2f;
-            _controller.center = new Vector3(0, _originalCenter.y - _centerOffset, 0);
+            
+		    float _centerOffset = (_defaultHeight - _crouchHeight) / 2f;
+            _controller.center = new Vector3(0, _originalCenter.y - _centerOffset, 0);  
+            */
+            
+               
 
             _isCrouching = true;
             //Add pelo carvalho
-            anim.Crouch();
+            _anim.Crouch();
             //
             
         }
@@ -357,13 +368,15 @@ public class PlayerMovement : MonoBehaviour
     {
         if (_isCrouching)
         {
-            _controller.height = _defaultHeight;
-            _controller.center = _originalCenter;
+            /*
+		_controller.height = _defaultHeight;
+            _controller.center = _originalCenter; 
+            */
 
 
             _isCrouching = false;
             //Add pelo carvalho
-            anim.StopCrouch();
+            _anim.StopCrouch();
             //
            
         }
@@ -384,11 +397,17 @@ public class PlayerMovement : MonoBehaviour
         float strafeAxis = Input.GetAxis("Strafe");
 
         _velocityHor.x = strafeAxis * _maxStrafeSpeed;
+        
+        if(_velocityHor.x != 0)
+        {
+            _anim.Walk();
+        }
+            
 
         if (forwardAxis > 0f)
         {
             //Add pelo carvalho
-            anim.Walk();
+            _anim.Walk();
             //
             _velocityHor.z = forwardAxis * _maxForwardSpeed;
 
@@ -399,7 +418,7 @@ public class PlayerMovement : MonoBehaviour
         else if (forwardAxis < 0f)
         {
             //Add pelo carvalho
-            anim.Walk();
+            _anim.Walk();
             //
             _velocityHor.z = forwardAxis * _maxBackwardSpeed;
 
@@ -408,19 +427,22 @@ public class PlayerMovement : MonoBehaviour
 
         }
         //Add pelo Carvalho
-        else if (_velocityHor.magnitude == 0)
+        else if (_velocityHor.magnitude == 0 || (forwardAxis == 0f && _velocityHor.x == 0))
         {
-            anim.StopWalk();
+            _velocityHor.z = 0f;
+            _anim.StopWalk();
         }
         //
 
-        else
+        /*
+		else
         {
             _velocityHor.z = 0f;
             //Add pelo carvalho
             anim.StopWalk();
             // 
-        }
+        } 
+        */
             
             
     }
@@ -453,7 +475,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collided.CompareTag("TakeDown") && Input.GetKeyDown(KeyCode.F))
         {
-            Debug.Log("Entered enemy's takedown zone!");
+            //Debug.Log("Entered enemy's takedown zone!");
 
             // Get a reference to the enemy script (on parent or root of the trigger)
             PatrolAI enemy = collided.GetComponentInParent<PatrolAI>(); // or .GetComponent<Enemy>() if same GameObject
@@ -462,7 +484,7 @@ public class PlayerMovement : MonoBehaviour
                 Transform parent = collided.transform.parent;
                 foreach (Transform child in parent)
                 {
-                    Debug.Log("Child: " + child.name);
+                    //Debug.Log("Child: " + child.name);
 
                     // Example: Find a child with a specific component
                     if (child.GetComponent<PatrolAI>() != null)
@@ -485,21 +507,32 @@ public class PlayerMovement : MonoBehaviour
             
         }
 
-        if (collided.gameObject.layer == LayerMask.NameToLayer("Loot") && Input.GetKeyDown(KeyCode.F))
+        if (collided.gameObject.layer == LayerMask.NameToLayer("Loot") && collided.CompareTag("DestroyableLoot") && Input.GetKeyDown(KeyCode.F))
         {
-            print("Received ammo!");
             _gun.AddAmo(_ammoToReceive);
             //Add pelo Carvalho
-            anim.Heal();
+            _anim.Heal();
+            Destroy(collided.gameObject);
             //
         }
+        else if (collided.gameObject.layer == LayerMask.NameToLayer("Loot") && Input.GetKeyDown(KeyCode.F))
+        {
+            _gun.AddAmo(_ammoToReceive);
+            //Add pelo Carvalho
+            _anim.Heal();
+            //
+        }
+
     }
 
     void Cheats()
     {
         if (Input.GetKeyDown(KeyCode.B))
             _gun.AddAmo(20);
-            
+        if (Input.GetKeyDown(KeyCode.L))
+            _life = 0;
+
+
     }
     //Add pelo carvalho
     public void ChangeUILife()
@@ -519,7 +552,6 @@ public class PlayerMovement : MonoBehaviour
         if (_life == 0)
         {
             hpBar.fillAmount = 0f;
-            anim.Dead();
         }
 
     }
