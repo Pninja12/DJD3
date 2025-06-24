@@ -34,6 +34,15 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Animation Settings")]
     [SerializeField] private AnimationsPlay _anim;
+
+    [Header("Stamina Settings")]
+    [SerializeField] private float _maxStamina = 100f;
+    [SerializeField] private float _currentStamina;
+    [SerializeField] private float _staminaDrainRate = 20f;
+    [SerializeField] private float _staminaRegenRate = 10f;
+    [SerializeField] private float _minStaminaToSprint = 50f; 
+    [SerializeField] private Image _staminaBar;
+    private bool _isSprinting = false;
     
 
     private CharacterController _controller;
@@ -61,6 +70,7 @@ public class PlayerMovement : MonoBehaviour
         _jump = false;
         _cameraLock = false;
         _arrivedAtCamera = false;
+        _currentStamina = _maxStamina;
         
         HideCursor();
         //Add pelo carvalho
@@ -91,6 +101,8 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             ChangeUILife();
+
+            ui.GetComponent<UIManager>().UpdateStaminaBar(_currentStamina, _maxStamina);
       
             if (!ui.GetPause())
             {
@@ -107,31 +119,66 @@ public class PlayerMovement : MonoBehaviour
                     // Stop crouching
                     StopCrouch();
                 }
-                if (Input.GetKeyDown(_sprintKey) && !Input.GetKeyDown(_crouchKey))
-                {
-                    // change velocity
-                    _maxForwardSpeed += _sprintSpeed;
 
-                    //Add pelo carvalho    
-                    _anim.Run();
-                    //
-                }
-                else if (Input.GetKeyUp(_sprintKey))
+                bool _sprintKeyHeld = Input.GetKey(_sprintKey);
+                bool _crouchKeyHeld = Input.GetKey(_crouchKey);
+
+                if (_sprintKeyHeld && !_crouchKeyHeld)
                 {
-                    // change velocity
-                    _maxForwardSpeed -= _sprintSpeed;
-                    //Add pelo carvalho    
-                    _anim.StopRun();
-                    //
+                    if((_currentStamina > _minStaminaToSprint || _isSprinting) && _currentStamina > 0f)
+                    {
+                        if(!_isSprinting)
+                        {
+                            _isSprinting = true;
+                            _maxForwardSpeed += _sprintSpeed;
+                            _anim.Run();
+                        }
+
+                        _currentStamina -= _staminaDrainRate * Time.deltaTime;
+                        _currentStamina = Mathf.Clamp(_currentStamina, 0f, _maxStamina);
+                    
+
+                        if(_currentStamina <= 0f)
+                        {
+                            StopSprint();
+                        }
+                    }
+
+                    else
+                    {
+                        StopSprint();
+                    }
+            
                 }
+                else
+                {
+                    StopSprint();
+                    _currentStamina += _staminaRegenRate * Time.deltaTime;
+                    _currentStamina = Mathf.Clamp(_currentStamina, 0f, _maxStamina);
+
+                }
+                
+                UpdateStaminaBar();
             }
 
             Cheats();
         }
 
+    }
 
-        
+    private void StopSprint()
+    {
+        if(_isSprinting)
+        {
+            _isSprinting = false;
+            _maxForwardSpeed -= _sprintSpeed;
+            _anim.StopRun();
+        }
+    }
 
+    private void UpdateStaminaBar()
+    {
+        if(_staminaBar != null) _staminaBar.fillAmount = _currentStamina / _maxStamina;
     }
 
     private void UpdateRotation()

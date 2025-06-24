@@ -7,6 +7,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _deadMenu;
     [SerializeField] private GameObject _pauseMenu;
     [SerializeField] private GameObject _crossHair;
+    [SerializeField] private Slider _staminaSlider;
     private Button _resumeButton;
 
     private bool _openPauseMenu;
@@ -70,6 +71,11 @@ public class UIManager : MonoBehaviour
         //
 
 
+    }
+
+    public void UpdateStaminaBar(float current, float max)
+    {
+        _staminaSlider.value = current / max;
     }
 
     public bool GetPause()
