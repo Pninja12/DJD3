@@ -1,4 +1,5 @@
 using UnityEngine;
+using Newtonsoft.Json;
 
 [System.Serializable]
 public struct ItemSaveData
@@ -19,11 +20,16 @@ public class SaveableItem : MonoBehaviour, ISaveable
 
     public void LoadSaveData(object data)
     {
-        ItemSaveData save = (ItemSaveData)data;
+        var jsonData = data.ToString();
+        ItemSaveData save = JsonConvert.DeserializeObject<ItemSaveData>(jsonData);
         collected = save.isCollected;
-        gameObject.SetActive(!collected);
+        gameObject.SetActive(!collected);    
+    }
+
+    public System.Type GetSaveDataType()
+    {
+        return typeof(ItemSaveData);
     }
 
     public void MarkCollected() => collected = true;
 }
-

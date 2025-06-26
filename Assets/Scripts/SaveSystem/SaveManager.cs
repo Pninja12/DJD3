@@ -1,8 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
-using UnityEngine.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SaveManager : MonoBehaviour
 {
@@ -16,82 +17,58 @@ public class SaveManager : MonoBehaviour
             return;
         }
 
-        DontDestroyOnLoad(gameObject); 
-    }
-
-    private void Start()
-    {
-        RegisterAllSaveables();
-    }
-
-    private void RegisterAllSaveables()
-    {
-        saveables.Clear(); 
-
-        SaveablePlayer player = FindObjectOfType<SaveablePlayer>();
-        if (player != null) RegisterSaveable("Player", player);
-
-        SaveableEnemy[] enemies = FindObjectsOfType<SaveableEnemy>();
-        for (int i = 0; i < enemies.Length; i++)
-            RegisterSaveable("Enemy" + i, enemies[i]);
-
-        SaveableItem[] items = FindObjectsOfType<SaveableItem>();
-        for (int i = 0; i < items.Length; i++)
-            RegisterSaveable("Item" + i, items[i]);
-    }
-
-    private void RegisterSaveable(string id, ISaveable saveable)
-    {
-        if (!saveables.ContainsKey(id))
-        {
-            saveables.Add(id, saveable);
-        }
+        DontDestroyOnLoad(gameObject);
     }
 
     public void SaveGame()
     {
-        Dictionary<string, object> saveData = new Dictionary<string, object>();
+        var saveData = new Dictionary<string, object>();
 
         foreach (var entry in saveables)
         {
-            if (entry.Value != null) 
-            {
-                saveData.Add(entry.Key, entry.Value.GetSaveData());
-            }
+            saveData[entry.Key] = entry.Value.GetSaveData();
         }
 
-        string json = JsonConvert.SerializeObject(saveData);
+        string json = JsonConvert.SerializeObject(saveData, Formatting.Indented);
         File.WriteAllText(Application.persistentDataPath + "/savegame.json", json);
-
         Debug.Log("Jogo salvo!");
     }
 
     public void LoadGame()
     {
         string path = Application.persistentDataPath + "/savegame.json";
-        if (File.Exists(path))
+        if (!File.Exists(path))
         {
-            string json = File.ReadAllText(path);
-            Dictionary<string, object> saveData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            Debug.LogWarning("Nenhum arquivo de save encontrado!");
+            return;
+        }
 
-            foreach (var entry in saveData)
+        string json = File.ReadAllText(path);
+        Dictionary<string, object> rawData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+
+        foreach (var entry in rawData)
+        {
+            if (saveables.ContainsKey(entry.Key))
             {
-                if (saveables.ContainsKey(entry.Key))
+                var saveable = saveables[entry.Key];
+                if (saveable == null || ((MonoBehaviour)saveable) == null || ((MonoBehaviour)saveable).gameObject == null)
                 {
-                    saveables[entry.Key].LoadSaveData(entry.Value);
-                    ((MonoBehaviour)saveables[entry.Key]).gameObject.SetActive(true);
+                    Debug.LogWarning($"Objeto salvo {entry.Key} foi destruído ou não existe mais, pulando load.");
+                    continue;
                 }
+
+                object typedData = JsonConvert.DeserializeObject(entry.Value.ToString(), saveable.GetSaveDataType());
+                saveable.LoadSaveData(typedData);
             }
-
-            Debug.Log("Jogo carregado!");
-        }
-        else
-        {
-            Debug.LogWarning("Nenhum save encontrado!");
+            else
+            {
+                Debug.LogWarning($"Objeto salvo {entry.Key} não está registrado no SaveManager.");
+            }
         }
 
-        Time.timeScale = 1; 
+        Debug.Log("Jogo carregado!");
     }
+
 
     public void SaveGameButton()
     {
@@ -100,7 +77,7 @@ public class SaveManager : MonoBehaviour
 
     public void LoadGameButton()
     {
-        SceneManager.LoadScene("Game"); 
+        SceneManager.LoadScene("Game");
     }
 
     private void OnEnable()
@@ -115,7 +92,38 @@ public class SaveManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        RegisterAllSaveables();
-        LoadGame(); 
+        StartCoroutine(DelayedLoad());
     }
+
+    private IEnumerator DelayedLoad()
+    {
+        yield return new WaitForSeconds(0.1f); // Espera objetos instanciar
+
+        RegisterAllSaveables();
+        LoadGame();
+    }
+
+    private void RegisterAllSaveables()
+    {
+        saveables.Clear();
+
+        SaveablePlayer player = FindObjectOfType<SaveablePlayer>();
+        if (player != null)
+            saveables.Add("Player", player);
+
+        SaveableEnemy[] enemies = FindObjectsOfType<SaveableEnemy>();
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            if (enemies[i] != null && enemies[i].gameObject.activeInHierarchy)
+                saveables.Add("Enemy" + i, enemies[i]);
+        }
+
+        SaveableItem[] items = FindObjectsOfType<SaveableItem>();
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i] != null && items[i].gameObject.activeInHierarchy)
+                saveables.Add("Item" + i, items[i]);
+        }
+    }
+
 }

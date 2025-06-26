@@ -1,4 +1,5 @@
 using UnityEngine;
+using Newtonsoft.Json;
 
 [System.Serializable]
 public struct EnemySaveData
@@ -18,8 +19,6 @@ public class SaveableEnemy : MonoBehaviour, ISaveable
 
     public object GetSaveData()
     {
-        if (this == null) return null;
-
         return new EnemySaveData
         {
             position = new float[] { transform.position.x, transform.position.y, transform.position.z },
@@ -27,15 +26,25 @@ public class SaveableEnemy : MonoBehaviour, ISaveable
         };
     }
 
-
     public void LoadSaveData(object data)
     {
-        EnemySaveData save = (EnemySaveData)data;
-        transform.position = new Vector3(save.position[0], save.position[1], save.position[2]);
+        var jsonData = data.ToString();
+        EnemySaveData save = JsonConvert.DeserializeObject<EnemySaveData>(jsonData);
 
+        transform.position = new Vector3(save.position[0], save.position[1], save.position[2]);
         if (save.isDead)
         {
-            _patrol.Death(); 
+            _patrol.Death();
         }
+    }
+
+    public System.Type GetSaveDataType()
+    {
+        return typeof(EnemySaveData);
+    }
+    
+    public void Death()
+    {
+        gameObject.SetActive(false); 
     }
 }

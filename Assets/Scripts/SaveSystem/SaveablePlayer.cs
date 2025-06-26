@@ -1,4 +1,5 @@
 using UnityEngine;
+using Newtonsoft.Json;
 
 [System.Serializable]
 public struct PlayerSaveData
@@ -16,7 +17,14 @@ public class SaveablePlayer : MonoBehaviour, ISaveable
 
     public void LoadSaveData(object data)
     {
-        PlayerSaveData save = (PlayerSaveData)data;
+        var jsonData = data.ToString();
+        PlayerSaveData save = JsonConvert.DeserializeObject<PlayerSaveData>(jsonData);
+
         transform.position = new Vector3(save.position[0], save.position[1], save.position[2]);
+    }
+
+    public System.Type GetSaveDataType()
+    {
+        return typeof(PlayerSaveData);
     }
 }
