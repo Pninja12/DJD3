@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -58,11 +59,14 @@ public class PlayerMovement : MonoBehaviour
     private bool _isCrouching = false;
     private float lastDamage = -Mathf.Infinity;
 
+    private Renderer _playerRenderer;
+
     //Add pelo carvalho
     public Image hpBar;
     //
     void Start()
     {
+        _playerRenderer = GetComponentInChildren<Renderer>();
         _controller = GetComponent<CharacterController>();
         _velocityHor = Vector3.zero;
         _velocityVer = Vector3.zero;
@@ -377,6 +381,28 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    public void FlashBlink()
+    {
+        StartCoroutine(FlashBlinkCoroutine(1f, 0.1f));
+    }
+
+    private IEnumerator FlashBlinkCoroutine(float duration, float blinkInterval)
+    {
+        float timer = 0f;
+        bool isVisible = true;
+
+        while (timer < duration)
+        {
+            isVisible = !isVisible; 
+            _playerRenderer.enabled = isVisible;
+
+            yield return new WaitForSeconds(blinkInterval);
+            timer += blinkInterval;
+        }
+
+        _playerRenderer.enabled = true;
+    }
+
     private void CheckForJump()
     {
         if (Input.GetButtonDown("Jump") && _controller.isGrounded)
@@ -513,6 +539,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+
     private void UpdatePosition()
     {
         _motion = (_velocityHor + _velocityVer) * Time.fixedDeltaTime;
@@ -554,6 +581,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _life--;
             lastDamage = Time.time;
+            FlashBlink();
             
         }
 

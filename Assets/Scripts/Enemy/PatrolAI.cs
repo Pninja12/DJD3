@@ -33,6 +33,8 @@ public class PatrolAI : MonoBehaviour
     [SerializeField] private Animator _anim;
     [SerializeField] private float _aggroRange = 100f;
 
+    private bool _isAttacking = false;
+
     private static List<PatrolAI> _enemies = new List<PatrolAI>();
 
   
@@ -88,7 +90,6 @@ public class PatrolAI : MonoBehaviour
                         {
                             int randomIndex = Random.Range(0, _points.Count);
 
-                            // Evita repetir o mesmo ponto duas vezes seguidas
                             while (_points.Count > 1 && randomIndex == _lastPointIndex)
                             {
                                 randomIndex = Random.Range(0, _points.Count);
@@ -227,11 +228,24 @@ public class PatrolAI : MonoBehaviour
 
     private void AttackMode()
     {
-        _state = EnemyState.FollowingPlayer;
-        _agent.SetDestination(_playerPosition);
+        if(_isAttacking) return;
 
-        _agent.speed = _chaseSpeed;
+        _state = EnemyState.FollowingPlayer;
+
+        _agent.isStopped = true;
+
+        //_agent.speed = _chaseSpeed;
         _anim.SetTrigger("Attack" + Random.Range(1,3));
+
+        StartCoroutine(AttackCooldown(1.2f));
+    }
+
+    private IEnumerator AttackCooldown(float _duration)
+    {
+        yield return new WaitForSeconds(_duration);
+
+        _agent.isStopped = false;
+        _isAttacking = false;
     }
 
     public void InvestigatePosition(Vector3 position)
