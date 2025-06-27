@@ -153,9 +153,12 @@ public class PlayerMovement : MonoBehaviour
                 else
                 {
                     StopSprint();
+                }
+
+                if (!_isSprinting)
+                {
                     _currentStamina += _staminaRegenRate * Time.deltaTime;
                     _currentStamina = Mathf.Clamp(_currentStamina, 0f, _maxStamina);
-
                 }
                 
                 UpdateStaminaBar();

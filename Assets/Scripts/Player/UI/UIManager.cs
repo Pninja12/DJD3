@@ -6,20 +6,20 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] private GameObject _deadMenu;
     [SerializeField] private GameObject _pauseMenu;
+    [SerializeField] private GameObject _endMenu;
     [SerializeField] private GameObject _crossHair;
     [SerializeField] private Slider _staminaSlider;
     private Button _resumeButton;
 
     private bool _openPauseMenu;
-    //Add pelo carvalho
-    private bool _opendeadMenu;
+    private bool _openDeadMenu;
+    private bool _openEndMenu;
     //
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _openPauseMenu = false;
-        //Add pelo carvalho
-        _opendeadMenu = false;
+        _openDeadMenu = false;
         
         //
         _crossHair.SetActive(false);
@@ -32,6 +32,9 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        _openDeadMenu = _deadMenu.activeSelf;
+        _openEndMenu = _endMenu.activeSelf;
 
         if (Input.GetButton("Camera") && !_openPauseMenu)
         {
@@ -47,7 +50,7 @@ public class UIManager : MonoBehaviour
         }
 
 
-        if (_openPauseMenu)
+        if (_openPauseMenu && !_openDeadMenu && !_openEndMenu)
         {
             Time.timeScale = 0f;
             _pauseMenu.SetActive(true);
@@ -55,24 +58,21 @@ public class UIManager : MonoBehaviour
             _resumeButton.onClick.AddListener(TurnOff);
 
         }
-
+        else if (_openDeadMenu || _openEndMenu)
+        {
+            Time.timeScale = 0f;
+            Cursor.lockState = CursorLockMode.Confined;
+        }
         else
         {
             _pauseMenu.SetActive(false);
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
         }
-        //ADD pelo carvalho
-        if (_opendeadMenu)
-        {
-            Time.timeScale = 0f;
-            Cursor.lockState = CursorLockMode.Confined;
-        }
         //
 
 
     }
-
     public void UpdateStaminaBar(float current, float max)
     {
         _staminaSlider.value = current / max;
@@ -80,7 +80,7 @@ public class UIManager : MonoBehaviour
 
     public bool GetPause()
     {
-        return (_openPauseMenu || _deadMenu.activeSelf);
+        return (_openPauseMenu || _openDeadMenu || _openEndMenu);
     }
 
     void TurnOff()
@@ -98,7 +98,7 @@ public class UIManager : MonoBehaviour
         // espera Xs
         yield return new WaitForSeconds(3f);
         _deadMenu.SetActive(true);
-        _opendeadMenu = true;
+        _openDeadMenu = true;
 
     }
     //
