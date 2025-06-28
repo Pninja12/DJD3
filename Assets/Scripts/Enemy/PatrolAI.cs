@@ -234,10 +234,19 @@ public class PatrolAI : MonoBehaviour
 
         _agent.isStopped = true;
 
+        
+
         //_agent.speed = _chaseSpeed;
         _anim.SetTrigger("Attack" + Random.Range(1,3));
 
         StartCoroutine(AttackCooldown(1.2f));
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            other.GetComponent<CharacterHit>()?.TakeHit();
+        }
     }
 
     private IEnumerator AttackCooldown(float _duration)

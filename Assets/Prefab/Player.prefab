@@ -2039,6 +2039,12 @@ MonoBehaviour:
   _life: 3
   damageCooldown: 2
   _anim: {fileID: 0}
+  _maxStamina: 100
+  _currentStamina: 0
+  _staminaDrainRate: 20
+  _staminaRegenRate: 10
+  _minStaminaToSprint: 50
+  _staminaBar: {fileID: 0}
   hpBar: {fileID: 0}
 --- !u!136 &7547083933696045121
 CapsuleCollider:
