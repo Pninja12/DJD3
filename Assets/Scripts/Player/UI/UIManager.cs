@@ -13,16 +13,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _settingsMenu;
     [SerializeField] private GameObject _crossHair;
     [SerializeField] private Slider _staminaSlider;
-<<<<<<< HEAD
     [SerializeField] private Morto morto;
 
     private Button _resumeButton;
-=======
+
     [SerializeField] private AudioMixer AudioMixer;
     [SerializeField] private Light sceneLight;
     [SerializeField] private Volume globalVolume;
     //private Button _resumeButton;
->>>>>>> 8369fe7176f95e3237f8c3b80ec124c837be7233
+
 
     private bool _openPauseMenu;
     private bool _openDeadMenu;
