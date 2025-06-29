@@ -20,10 +20,12 @@ public class SaveableItem : MonoBehaviour, ISaveable
 
     public void LoadSaveData(object data)
     {
-        var jsonData = data.ToString();
-        ItemSaveData save = JsonConvert.DeserializeObject<ItemSaveData>(jsonData);
+        ItemSaveData save = JsonConvert.DeserializeObject<ItemSaveData>(
+            JsonConvert.SerializeObject(data)
+        );
+
         collected = save.isCollected;
-        gameObject.SetActive(!collected);    
+        gameObject.SetActive(!collected);
     }
 
     public System.Type GetSaveDataType()

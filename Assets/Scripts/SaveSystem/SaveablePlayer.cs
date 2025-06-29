@@ -17,9 +17,7 @@ public class SaveablePlayer : MonoBehaviour, ISaveable
 
     public void LoadSaveData(object data)
     {
-        var jsonData = data.ToString();
-        PlayerSaveData save = JsonConvert.DeserializeObject<PlayerSaveData>(jsonData);
-
+        PlayerSaveData save = JsonConvert.DeserializeObject<PlayerSaveData>(JsonConvert.SerializeObject(data));
         transform.position = new Vector3(save.position[0], save.position[1], save.position[2]);
     }
 

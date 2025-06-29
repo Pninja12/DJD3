@@ -7,15 +7,19 @@ using UnityEngine.SceneManagement;
 
 public class SaveManager : MonoBehaviour
 {
+    public static SaveManager Instance { get; private set; }
+    public static bool shouldLoadGame = false;
     private Dictionary<string, ISaveable> saveables = new Dictionary<string, ISaveable>();
 
     private void Awake()
     {
-        if (FindObjectsOfType<SaveManager>().Length > 1)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
+
+        Instance = this;
 
         DontDestroyOnLoad(gameObject);
     }
@@ -77,6 +81,7 @@ public class SaveManager : MonoBehaviour
 
     public void LoadGameButton()
     {
+        shouldLoadGame = true;
         SceneManager.LoadScene("Game");
     }
 
@@ -100,7 +105,11 @@ public class SaveManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f); // Espera objetos instanciar
 
         RegisterAllSaveables();
-        LoadGame();
+        if(shouldLoadGame)
+        {
+            LoadGame();
+            shouldLoadGame = false;
+        }
     }
 
     private void RegisterAllSaveables()

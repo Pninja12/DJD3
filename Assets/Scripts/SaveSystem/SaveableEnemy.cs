@@ -28,10 +28,12 @@ public class SaveableEnemy : MonoBehaviour, ISaveable
 
     public void LoadSaveData(object data)
     {
-        var jsonData = data.ToString();
-        EnemySaveData save = JsonConvert.DeserializeObject<EnemySaveData>(jsonData);
+        EnemySaveData save = JsonConvert.DeserializeObject<EnemySaveData>(
+            JsonConvert.SerializeObject(data)
+        );
 
         transform.position = new Vector3(save.position[0], save.position[1], save.position[2]);
+
         if (save.isDead)
         {
             _patrol.Death();

@@ -2099,10 +2099,11 @@ MonoBehaviour:
   _range: 5
   _health: 3
   _chaseSpeed: 8
+  _detected: {fileID: 0}
   _points: []
   _timeBetweenPatrolPoint: 3
   _anim: {fileID: 8654991618477465366}
-  _aggroRange: 50
+  _aggroRange: 100
 --- !u!195 &5363899529231390046
 NavMeshAgent:
   m_ObjectHideFlags: 0

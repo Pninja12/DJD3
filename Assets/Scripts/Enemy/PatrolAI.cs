@@ -79,7 +79,7 @@ public class PatrolAI : MonoBehaviour
                     _hasPlayedDetectionSound = true;
                 }
 
-                ChaseMode();
+                ChaseMode(_player.position);
             }
             else if (Vector3.Distance(transform.position, _playerPosition) < 3)
             {
@@ -190,7 +190,7 @@ public class PatrolAI : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         _playerPosition = _player.position;
-        ChaseMode();
+        ChaseMode(_player.position);
 
     }
 
@@ -210,13 +210,13 @@ public class PatrolAI : MonoBehaviour
     }*/
 
 
-    public void ChaseMode(bool propagate = true)
+    public void ChaseMode(Vector3 playerPos, bool propagate = true)
     {
         //if (_state == EnemyState.FollowingPlayer) return;
 
+        _playerPosition = playerPos;
         _state = EnemyState.FollowingPlayer;
         _agent.SetDestination(_playerPosition);
-
         _agent.speed = _chaseSpeed;
 
         
@@ -230,7 +230,7 @@ public class PatrolAI : MonoBehaviour
                 Vector3.Distance(transform.position, enemy.transform.position) <= _aggroRange &&
                 enemy._state != EnemyState.FollowingPlayer)
             {
-                enemy.ChaseMode(false);
+                enemy.ChaseMode(playerPos, false);
             }
         }
     }
