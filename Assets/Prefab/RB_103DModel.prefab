@@ -2098,7 +2098,7 @@ MonoBehaviour:
   _vision: {fileID: 8598257211775012493}
   _range: 5
   _health: 3
-  _chaseSpeed: 8
+  _chaseSpeed: 10
   _detected: {fileID: 0}
   _points: []
   _timeBetweenPatrolPoint: 3

@@ -20,7 +20,7 @@ public class PatrolAI : MonoBehaviour
     [SerializeField] private float _range;
     [SerializeField] private float _health = 3;
 
-    [SerializeField] private float _chaseSpeed = 8;
+    [SerializeField] private float _chaseSpeed = 10;
     [SerializeField] private Detected _detected;
 
     [SerializeField] private List<Transform> _points;
