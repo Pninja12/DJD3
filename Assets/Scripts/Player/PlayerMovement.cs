@@ -75,16 +75,17 @@ public class PlayerMovement : MonoBehaviour
         _cameraLock = false;
         _arrivedAtCamera = false;
         _currentStamina = _maxStamina;
-        
+
         HideCursor();
         //Add pelo carvalho
         _anim = gameObject.GetComponent<AnimationsPlay>();
-        
+
         ChangeUILife();
         //
 
         _defaultHeight = _controller.height;
         _originalCenter = _controller.center;
+        
     }
 
     private void HideCursor()
@@ -101,13 +102,14 @@ public class PlayerMovement : MonoBehaviour
             _anim.Dead();
             //Scene _currentScene = SceneManager.GetActiveScene();
             //SceneManager.LoadScene(_currentScene.name);
+
         }
         else
         {
             ChangeUILife();
 
             ui.GetComponent<UIManager>().UpdateStaminaBar(_currentStamina, _maxStamina);
-      
+
             if (!ui.GetPause())
             {
                 CheckForJump();
@@ -129,9 +131,9 @@ public class PlayerMovement : MonoBehaviour
 
                 if (_sprintKeyHeld && !_crouchKeyHeld)
                 {
-                    if((_currentStamina > _minStaminaToSprint || _isSprinting) && _currentStamina > 0f)
+                    if ((_currentStamina > _minStaminaToSprint || _isSprinting) && _currentStamina > 0f)
                     {
-                        if(!_isSprinting)
+                        if (!_isSprinting)
                         {
                             _isSprinting = true;
                             _maxForwardSpeed += _sprintSpeed;
@@ -140,9 +142,9 @@ public class PlayerMovement : MonoBehaviour
 
                         _currentStamina -= _staminaDrainRate * Time.deltaTime;
                         _currentStamina = Mathf.Clamp(_currentStamina, 0f, _maxStamina);
-                    
 
-                        if(_currentStamina <= 0f)
+
+                        if (_currentStamina <= 0f)
                         {
                             StopSprint();
                         }
@@ -152,7 +154,7 @@ public class PlayerMovement : MonoBehaviour
                     {
                         StopSprint();
                     }
-            
+
                 }
                 else
                 {
@@ -164,7 +166,7 @@ public class PlayerMovement : MonoBehaviour
                     _currentStamina += _staminaRegenRate * Time.deltaTime;
                     _currentStamina = Mathf.Clamp(_currentStamina, 0f, _maxStamina);
                 }
-                
+
                 UpdateStaminaBar();
             }
 

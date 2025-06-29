@@ -9,6 +9,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _endMenu;
     [SerializeField] private GameObject _crossHair;
     [SerializeField] private Slider _staminaSlider;
+    [SerializeField] private Morto morto;
+
     private Button _resumeButton;
 
     private bool _openPauseMenu;
@@ -87,16 +89,25 @@ public class UIManager : MonoBehaviour
     {
         _openPauseMenu = false;
     }
-    //Add pelo carvalho
+
     public void DeadPanel()
     {
+        _openDeadMenu = true;
         StartCoroutine(WaitForDeadPanel());
     }
-    
+        
     private IEnumerator WaitForDeadPanel()
     {
-        // espera Xs
+        // espera 3 segundos
         yield return new WaitForSeconds(3f);
+
+        // Toca o som de morte
+        if (morto != null)
+        {
+            morto.Death();
+        }
+
+        // Ativa o menu de morte
         _deadMenu.SetActive(true);
         _openDeadMenu = true;
 

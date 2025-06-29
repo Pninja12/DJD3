@@ -21,12 +21,15 @@ public class PatrolAI : MonoBehaviour
     [SerializeField] private float _health = 3;
 
     [SerializeField] private float _chaseSpeed = 8;
+    [SerializeField] private Detected _detected;
 
     [SerializeField] private List<Transform> _points;
     [SerializeField] private float _timeBetweenPatrolPoint;
     //private byte point = 0;
     private EnemyState _state;
     private bool _runCourotineOnce = false;
+    private bool _hasPlayedDetectionSound = false;
+
     private Transform _player;
     private Vector3 _playerPosition;
 
@@ -69,6 +72,13 @@ public class PatrolAI : MonoBehaviour
             if (_vision.DetectPlayer())
             {
                 _playerPosition = _player.position;
+
+                if (!_hasPlayedDetectionSound && _detected != null)
+                {
+                    _detected.Detect();
+                    _hasPlayedDetectionSound = true;
+                }
+
                 ChaseMode();
                 print(Vector3.Distance(transform.position, _playerPosition));
             }
