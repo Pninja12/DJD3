@@ -32,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private byte _ammoToReceive = 3;
     [SerializeField] private byte _life = 3;
     [SerializeField] private float damageCooldown = 5.0f;
+    [SerializeField] private GameObject _interact;
 
     [Header("Animation Settings")]
     [SerializeField] private AnimationsPlay _anim;
@@ -552,31 +553,36 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerStay(Collider collided)
     {
-        if (collided.CompareTag("TakeDown") && Input.GetKeyDown(KeyCode.F))
+        if (collided.CompareTag("TakeDown"))
         {
-            //Debug.Log("Entered enemy's takedown zone!");
-
-            // Get a reference to the enemy script (on parent or root of the trigger)
-            PatrolAI enemy = collided.GetComponentInParent<PatrolAI>(); // or .GetComponent<Enemy>() if same GameObject
-            if (enemy == null)
+            _interact.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.F))
             {
-                Transform parent = collided.transform.parent;
-                foreach (Transform child in parent)
-                {
-                    //Debug.Log("Child: " + child.name);
+                //Debug.Log("Entered enemy's takedown zone!");
 
-                    // Example: Find a child with a specific component
-                    if (child.GetComponent<PatrolAI>() != null)
+                // Get a reference to the enemy script (on parent or root of the trigger)
+                PatrolAI enemy = collided.GetComponentInParent<PatrolAI>(); // or .GetComponent<Enemy>() if same GameObject
+                if (enemy == null)
+                {
+                    Transform parent = collided.transform.parent;
+                    foreach (Transform child in parent)
                     {
-                        enemy = child.GetComponentInParent<PatrolAI>();
+                        //Debug.Log("Child: " + child.name);
+
+                        // Example: Find a child with a specific component
+                        if (child.GetComponent<PatrolAI>() != null)
+                        {
+                            enemy = child.GetComponentInParent<PatrolAI>();
+                        }
                     }
                 }
-            }
 
-            if (enemy != null && enemy.GetState() != EnemyState.FollowingPlayer)
-            {
-                enemy.Death(10);
+                if (enemy != null && enemy.GetState() != EnemyState.FollowingPlayer)
+                {
+                    enemy.Death(10);
+                }
             }
+            
         }
 
         if (collided.gameObject.layer == LayerMask.NameToLayer("Enemy") && _life > 0 && Time.time - lastDamage >= damageCooldown)
@@ -587,13 +593,17 @@ public class PlayerMovement : MonoBehaviour
             
         }
 
-        if (collided.gameObject.layer == LayerMask.NameToLayer("Loot") && collided.CompareTag("DestroyableLoot") && Input.GetKeyDown(KeyCode.F))
+        if (collided.gameObject.layer == LayerMask.NameToLayer("Loot") && collided.CompareTag("DestroyableLoot"))
         {
-            _gun.AddAmo(_ammoToReceive);
-            //Add pelo Carvalho
-            _anim.Heal();
-            Destroy(collided.gameObject);
-            //
+            _interact.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                _gun.AddAmo(_ammoToReceive);
+                //Add pelo Carvalho
+                _anim.Heal();
+                Destroy(collided.gameObject);
+            }
+            
         }
         else if (collided.gameObject.layer == LayerMask.NameToLayer("Loot") && Input.GetKeyDown(KeyCode.F))
         {
@@ -603,6 +613,11 @@ public class PlayerMovement : MonoBehaviour
             //
         }
 
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        _interact.SetActive(false);
     }
 
     void Cheats()
