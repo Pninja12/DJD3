@@ -70,7 +70,6 @@ public class PatrolAI : MonoBehaviour
             {
                 _playerPosition = _player.position;
                 ChaseMode();
-                print(Vector3.Distance(transform.position, _playerPosition));
             }
             else if (Vector3.Distance(transform.position, _playerPosition) < 3)
             {
